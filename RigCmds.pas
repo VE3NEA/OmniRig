@@ -28,7 +28,7 @@ type
     pmRitOn, pmRitOff,
     pmXitOn, pmXitOff,
     pmRx, pmTx,
-    pmCW_U, pmCW_L, pmSSB_U, pmSSB_L, pmAM, pmFM, pmRTTY_U, pmRTTY_L, pmPSK_U, pmPSK_L);
+    pmCW_U, pmCW_L, pmSSB_U, pmSSB_L, pmAM, pmFM, pmRTTY, pmPSK);
 
   TRigParamSet = set of TRigParam;
 
@@ -39,7 +39,7 @@ const
   RitOnParams = [pmRitOn, pmRitOff];
   XitOnParams = [pmXitOn, pmXitOff];
   TxParams = [pmRx, pmTx];
-  ModeParams = [pmCW_U, pmCW_L, pmSSB_U, pmSSB_L, pmAM, pmFM, pmRTTY_U, pmRTTY_L, pmPSK_U, pmPSK_L];
+  ModeParams = [pmCW_U, pmCW_L, pmSSB_U, pmSSB_L, pmAM, pmFM, pmRTTY, pmPSK];
 
 
 type

@@ -12,7 +12,7 @@ unit OmniRig_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : $Revision:   1.88.1.0.1.0  $
-// File generated on 2/8/2017 2:55:47 PM from Type Library described below.
+// File generated on 2/8/2017 6:00:57 PM from Type Library described below.
 
 // ************************************************************************ //
 // Type Lib: C:\DMdocs\DelphiDev\OmniRig\OmniRig.tlb (1)
@@ -83,12 +83,10 @@ const
   PM_CW_L = $01000000;
   PM_SSB_U = $02000000;
   PM_SSB_L = $04000000;
-  PM_AM = $20000000;
-  PM_FM = $40000000;
-  PM_RTTY_U = $40000001;
-  PM_RTTY_L = $40000002;
-  PM_PSK_U = $40000003;
-  PM_PSK_L = $40000004;
+  PM_AM = $08000000;
+  PM_FM = $10000000;
+  PM_RTTY = $20000000;
+  PM_PSK = $40000000;
 
 // Constants for enum RigStatusX
 type
