@@ -21,7 +21,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ComCtrls, ExtCtrls, StdCtrls, CustRig, RigObj, RigSett, IniFiles, RigCmds,
   AppEvnts, ComServ, AutoApp, AlStrLst, Spin, ShellApi, WinSpool,
-  ShlObj, FileCtrl;
+  ShlObj;
 
 type
   TMainForm = class(TForm)
@@ -268,7 +268,7 @@ begin
       Result := GetAfreetDataFolder + 'Products\';
       AppName := ChangeFileExt(ExtractFileName(ParamStr(0)), '');
       Result := Result + AppName + '\';
-      try ForceDirectories(Result); except end;
+//dm      try ForceDirectories(Result); except end;
       Result := Result + AppName + '.ini';
       end;
 end;

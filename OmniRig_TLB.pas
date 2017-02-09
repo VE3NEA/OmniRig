@@ -12,15 +12,15 @@ unit OmniRig_TLB;
 // ************************************************************************ //
 
 // PASTLWTR : $Revision:   1.88.1.0.1.0  $
-// File generated on 2004-08-26 PM 12:19:56 from Type Library described below.
+// File generated on 2/8/2017 2:55:47 PM from Type Library described below.
 
 // ************************************************************************ //
-// Type Lib: D:\OmniRig\Server\OmniRig.tlb (1)
+// Type Lib: C:\DMdocs\DelphiDev\OmniRig\OmniRig.tlb (1)
 // IID\LCID: {4FE359C5-A58F-459D-BE95-CA559FB4F270}\0
 // Helpfile: 
 // DepndLst: 
-//   (1) v2.0 stdole, (C:\WINNT\system32\stdole2.tlb)
-//   (2) v4.0 StdVCL, (C:\WINNT\System32\STDVCL40.DLL)
+//   (1) v2.0 stdole, (C:\WINDOWS\system32\stdole2.tlb)
+//   (2) v4.0 StdVCL, (C:\WINDOWS\system32\STDVCL40.DLL)
 // ************************************************************************ //
 {$TYPEDADDRESS OFF} // Unit must be compiled without type-checked pointers. 
 interface
@@ -83,10 +83,12 @@ const
   PM_CW_L = $01000000;
   PM_SSB_U = $02000000;
   PM_SSB_L = $04000000;
-  PM_DIG_U = $08000000;
-  PM_DIG_L = $10000000;
   PM_AM = $20000000;
   PM_FM = $40000000;
+  PM_RTTY_U = $40000001;
+  PM_RTTY_L = $40000002;
+  PM_PSK_U = $40000003;
+  PM_PSK_L = $40000004;
 
 // Constants for enum RigStatusX
 type

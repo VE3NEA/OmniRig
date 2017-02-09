@@ -28,7 +28,7 @@ type
     pmRitOn, pmRitOff,
     pmXitOn, pmXitOff,
     pmRx, pmTx,
-    pmCW_U, pmCW_L, pmSSB_U, pmSSB_L, pmDIG_U, pmDIG_L, pmAM, pmFM);
+    pmCW_U, pmCW_L, pmSSB_U, pmSSB_L, pmAM, pmFM, pmRTTY_U, pmRTTY_L, pmPSK_U, pmPSK_L);
 
   TRigParamSet = set of TRigParam;
 
@@ -39,7 +39,7 @@ const
   RitOnParams = [pmRitOn, pmRitOff];
   XitOnParams = [pmXitOn, pmXitOff];
   TxParams = [pmRx, pmTx];
-  ModeParams = [pmCW_U, pmCW_L, pmSSB_U, pmSSB_L, pmDIG_U, pmDIG_L, pmAM, pmFM];
+  ModeParams = [pmCW_U, pmCW_L, pmSSB_U, pmSSB_L, pmAM, pmFM, pmRTTY_U, pmRTTY_L, pmPSK_U, pmPSK_L];
 
 
 type
@@ -245,9 +245,12 @@ begin
           begin
           FSection := L[i];
           WasError := false;
-          if Copy(UpperCase(L[i]), 1, 4) = 'INIT' then LoadInitCmd
-          else if Copy(UpperCase(L[i]), 1, 6) = 'STATUS' then LoadStatusCmd
-          else LoadWriteCmd;
+          if Copy(UpperCase(L[i]), 1, 4) = 'INIT' then
+            LoadInitCmd
+          else if Copy(UpperCase(L[i]), 1, 6) = 'STATUS' then
+            LoadStatusCmd
+          else
+            LoadWriteCmd;
           end;
       finally
         L.Free;
@@ -270,12 +273,14 @@ begin
     Result.Code := StrToBytes(FIni.ReadString(FSection, FEntry, ''));
   except Log('invalid byte string'); end;
 
- if Result.Code = nil then Log('command code is missing');
+  if Result.Code = nil then
+    Log('command code is missing');
 
   try
     FEntry := 'ReplyLength';
     Result.ReplyLength := FIni.ReadInteger(FSection, FEntry, 0);
-    if Result.ReplyLength < 0 then Abort;
+    if Result.ReplyLength < 0 then
+      Abort;
   except Log('invalid integer'); end;
 
   try
@@ -306,18 +311,22 @@ begin
     end;
 
   try Result.Start := StrToInt(FList[0]);
-  except Log('invalid Start value'); end;
+  except
+    Log('invalid Start value'); end;
 
   try Result.Len := StrToInt(FList[1]);
-  except Log('invalid Length value'); end;
+  except
+    Log('invalid Length value'); end;
 
   Result.Format := StrToFmt(FList[2]);
 
   try Result.Mult := StrToFloat(FList[3]);
-  except Log('invalid Multiplier value'); end;
+  except
+    Log('invalid Multiplier value'); end;
 
   try Result.Add := StrToFloat(FList[4]);
-  except Log('invalid Add value'); end;
+  except
+    Log('invalid Add value'); end;
 end;
 
 
@@ -332,9 +341,12 @@ begin
 
   FEntry := 'Value';
   if Cmd.Value.Format <> vfNone then
-    begin  Log('value is not allowed in INIT'); Exit; end;
-
-  if WasError then Exit;
+    begin
+      Log('value is not allowed in INIT');
+      Exit;
+    end;
+  if WasError then
+    Exit;
   SetLength(InitCmd, Length(InitCmd)+1);
   InitCmd[High(InitCmd)] := Cmd;
 end;
@@ -350,22 +362,26 @@ begin
   if WasError then Exit;
 
   ValidateEntryNames(['COMMAND', 'REPLYLENGTH', 'REPLYEND', 'VALIDATE', 'VALUE']);
-  if FList.Count = 0 then Exit;
+  if FList.Count = 0 then
+    Exit;
 
   Cmd := LoadCommon;
   FEntry := 'Value';
   Cmd.Value := LoadValue;
   ValidateValue(Cmd.Value, Length(Cmd.Code));
-  if Cmd.Value.Param <> pmNone then Log('parameter name is not allowed');
+  if Cmd.Value.Param <> pmNone then
+    Log('parameter name is not allowed');
 
   if (Param in NumericParams) and (Cmd.Value.Len = 0)
-    then Log('Value is missing');
+  then
+    Log('Value is missing');
 
-  if (not (Param in NumericParams)) and (Cmd.Value.Len > 0)
-    then Log('parameter does not require a value', false);
+  if (not (Param in NumericParams)) and (Cmd.Value.Len > 0) then
+    Log('parameter does not require a value', false);
 
 
-  if not WasError then WriteCmd[Param] := Cmd;
+  if not WasError then
+    WriteCmd[Param] := Cmd;
 end;
 
 
@@ -402,7 +418,8 @@ begin
         FEntry := L[i];
         Value := LoadValue;
         ValidateValue(Value, Max(Cmd.ReplyLength, Length(Cmd.Validation.Mask)));
-        if Value.Param = pmNone then Log('parameter name is missing')
+        if Value.Param = pmNone then
+          Log('parameter name is missing')
         else if not (Value.Param in NumericParams) then
           Log('parameter must be of numeric type');
 
@@ -426,7 +443,8 @@ begin
     Log('at least one ValueNN or FlagNN must be defined');
 
 
-  if WasError then Exit;
+  if WasError then
+    Exit;
   SetLength(StatusCmd, Length(StatusCmd)+1);
   StatusCmd[High(StatusCmd)] := Cmd;
 end;
@@ -445,9 +463,10 @@ var
 begin
   Result := vfNone; //please the paranoid compiler
   i := GetEnumValue(TypeInfo(TValueFormat), S);
-  if i > -1
-    then Result := TValueFormat(i)
-    else Log('invalid format name');
+  if i > -1 then
+    Result := TValueFormat(i)
+  else
+    Log('invalid format name');
 end;
 
 
@@ -458,8 +477,10 @@ begin
   Result := pmNone;
   i := GetEnumValue(TypeInfo(TRigParam), S);
 
-  if i > -1 then Result := TRigParam(i)
-  else if ShowInLog then Log('invalid parameter name', false);
+  if i > -1 then
+    Result := TRigParam(i)
+  else if ShowInLog then
+    Log('invalid parameter name', false);
 end;
 
 
@@ -476,12 +497,14 @@ begin
   //blank
   Result := nil;
   S := Trim(S);
-  if Length(S) < 2 then Exit;
+  if Length(S) < 2 then
+    Exit;
 
   //asc
   if S[1] = '(' then
     begin
-    if S[Length(S)] <> ')' then Abort;
+    if S[Length(S)] <> ')' then
+      Abort;
     SetLength(Result, Length(S)-2);
     Move(S[2], Result[0], Length(Result));
     end
@@ -489,11 +512,14 @@ begin
   //hex
   else if S[1] in ['0'..'9', 'A'..'F'] then
     begin
-    for i:=Length(S) downto 1 do if S[i] = '.' then Delete(S, i, 1);
-    if Length(S) mod 2 <> 0 then Abort;
-    SetLength(Result, Length(S) div 2);
-    for i:=0 to High(Result) do
-      Result[i] := StrToInt('$' + Copy(S, 1 + i*2, 2));
+    for i:=Length(S) downto 1 do
+      if S[i] = '.' then
+        Delete(S, i, 1);
+      if Length(S) mod 2 <> 0 then
+        Abort;
+      SetLength(Result, Length(S) div 2);
+      for i:=0 to High(Result) do
+        Result[i] := StrToInt('$' + Copy(S, 1 + i*2, 2));
     end
 
   //all other
@@ -506,15 +532,18 @@ var
   i: integer;
 begin
   Result := Copy(AMask);
-  if Char1 = '('
-    then
-      for i:=0 to High(AMask) do
-        if AMask[i] = Ord('.')
-          then begin AMask[i] := 0; Result[i] := 0; end
-          else AMask[i] := $FF
-    else
-      for i:=0 to High(AMask) do
-        if AMask[i] <> 0 then AMask[i] := $FF;
+  if Char1 = '(' then
+     for i:=0 to High(AMask) do
+       if AMask[i] = Ord('.') then
+       begin
+         AMask[i] := 0; Result[i] := 0;
+       end
+       else
+         AMask[i] := $FF
+       else
+         for i:=0 to High(AMask) do
+           if AMask[i] <> 0 then
+             AMask[i] := $FF;
 end;
 
 
@@ -535,7 +564,8 @@ begin
   //extract mask
   FList.DelimText := S;
   Result.Mask := StrToBytes(FList[0]);
-  if Result.Mask = nil then Abort;
+  if Result.Mask = nil then
+    Abort;
 
   case FList.Count of
     1: //just mask, infer flags
@@ -551,8 +581,8 @@ begin
 
     3: //mask|flags|param
       begin
-      Result.Flags := StrToBytes(FList[1]);
-      Result.Param := StrToParam(FList[2]);
+        Result.Flags := StrToBytes(FList[1]);
+        Result.Param := StrToParam(FList[2]);
       end;
 
     else //invalid number of '|'
@@ -603,8 +633,10 @@ begin
       end
     else
       begin
-      if AMask.Param = pmNone then Log('parameter name is missing');
-      if AMask.Mask = nil then Log('mask is blank');
+      if AMask.Param = pmNone then
+        Log('parameter name is missing');
+      if AMask.Mask = nil then
+        Log('mask is blank');
       end;
 end;
 
@@ -617,9 +649,12 @@ begin
 
   with AValue do
     begin
-    if (Start < 0) or (Start >= ALen) then Log('invalid Start value');
-    if (Len < 0) or (Start+Len > ALen) then Log('invalid Length value');
-    if Mult <= 0 then Log('invalid Multiplier value');
+    if (Start < 0) or (Start >= ALen) then
+      Log('invalid Start value');
+    if (Len < 0) or (Start+Len > ALen) then
+      Log('invalid Length value');
+    if Mult <= 0 then
+      Log('invalid Multiplier value');
     end;
 end;
 
@@ -641,10 +676,14 @@ begin
       S1 := UpperCase(FList[i]);
       S2 := Names[j];
       if S2[Length(S2)] = '*' then
-        begin Delete(S2, Length(S2), 1); S1 := Copy(S1, 1, Length(S2)); end;
+        begin
+          Delete(S2, Length(S2), 1);
+          S1 := Copy(S1, 1, Length(S2));
+        end;
       Ok := Ok or (S1 = S2);
       end;
-    if not Ok then Log('invalid entry name', false);
+    if not Ok then
+      Log('invalid entry name', false);
     end;
 end;
 
@@ -684,7 +723,8 @@ var
 begin
   Result := '';
   for p:=Low(TRigParam) to High(TRigParam) do
-    if p in Params then Result := Result + ParamToStr(p) + ',';
+    if p in Params then
+      Result := Result + ParamToStr(p) + ',';
   Delete(Result, Length(Result), 1);
 end;
 
@@ -695,7 +735,8 @@ var
 begin
   Result := 0;
   for Par:=Low(TRigParam) to High(TRigParam) do
-    if Par in Params then Result := Result or (1 shl Ord(Par));
+    if Par in Params then
+      Result := Result or (1 shl Ord(Par));
 end;
 
 
@@ -708,7 +749,8 @@ end;
 function IntToParam(Int: integer): TRigParam;
 begin
   for Result:=Low(TRigParam) to High(TRigParam) do
-    if (1 shl Ord(Result)) = Int then Exit;
+    if (1 shl Ord(Result)) = Int then
+      Exit;
   Result := pmNone;
 end;
 

@@ -54,9 +54,6 @@ object MainForm: TMainForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
-    DesignSize = (
-      411
-      33)
     object OkBtn: TButton
       Left = 249
       Top = 5
@@ -189,6 +186,7 @@ object MainForm: TMainForm
         Height = 21
         Style = csDropDownList
         DropDownCount = 16
+        ItemHeight = 13
         TabOrder = 0
         Items.Strings = (
           'COM 1'
@@ -220,6 +218,7 @@ object MainForm: TMainForm
         Height = 21
         Style = csDropDownList
         DropDownCount = 19
+        ItemHeight = 13
         TabOrder = 1
       end
       object DataBitsComboBox: TComboBox
@@ -228,6 +227,7 @@ object MainForm: TMainForm
         Width = 103
         Height = 21
         Style = csDropDownList
+        ItemHeight = 13
         TabOrder = 2
         Items.Strings = (
           '5'
@@ -241,6 +241,7 @@ object MainForm: TMainForm
         Width = 103
         Height = 21
         Style = csDropDownList
+        ItemHeight = 13
         TabOrder = 3
         Items.Strings = (
           'None'
@@ -255,6 +256,7 @@ object MainForm: TMainForm
         Width = 103
         Height = 21
         Style = csDropDownList
+        ItemHeight = 13
         TabOrder = 4
         Items.Strings = (
           '1'
@@ -267,6 +269,7 @@ object MainForm: TMainForm
         Width = 103
         Height = 21
         Style = csDropDownList
+        ItemHeight = 13
         TabOrder = 5
         Items.Strings = (
           'Low'
@@ -280,6 +283,7 @@ object MainForm: TMainForm
         Height = 21
         Style = csDropDownList
         DropDownCount = 16
+        ItemHeight = 13
         TabOrder = 6
         Items.Strings = (
           'Yes'
@@ -313,6 +317,7 @@ object MainForm: TMainForm
         Width = 103
         Height = 21
         Style = csDropDownList
+        ItemHeight = 13
         TabOrder = 9
         Items.Strings = (
           'Low'
@@ -328,9 +333,6 @@ object MainForm: TMainForm
       BevelOuter = bvLowered
       TabOrder = 1
       Visible = False
-      DesignSize = (
-        197
-        294)
       object Label8: TLabel
         Left = 69
         Top = 31
@@ -409,7 +411,7 @@ object MainForm: TMainForm
       object Label13: TLabel
         Left = 56
         Top = 124
-        Width = 83
+        Width = 84
         Height = 16
         Caption = ' FREEWARE '
         Color = clGreen
@@ -443,7 +445,7 @@ object MainForm: TMainForm
         Top = 156
         Width = 110
         Height = 13
-        Caption = 'Copyright '#169' 2003-2014'
+        Caption = 'Copyright © 2003-2014'
       end
       object Label17: TLabel
         Left = 26

@@ -17,7 +17,7 @@ unit ByteFuns;
 interface
 
 uses
-  SysUtils, Math, Windows, Variants;
+  SysUtils, Math, Windows;  //, Variants;
 
 type
   TByteArray = array of Byte;

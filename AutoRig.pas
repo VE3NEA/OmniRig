@@ -17,8 +17,8 @@ unit AutoRig;
 interface
 
 uses
-  ComObj, ActiveX, OmniRig_TLB, StdVcl, RigObj, RigCmds, ByteFuns, AutoPort,
-  Variants;
+  ComObj, ActiveX, OmniRig_TLB, StdVcl, RigObj, RigCmds, ByteFuns, AutoPort;
+//  Variants;
 
 type
   TRigX = class(TAutoObject, IRigX)
