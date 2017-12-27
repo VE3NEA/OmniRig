@@ -37,7 +37,7 @@ type
 
     function NeedsReply: boolean;
   end;
-  
+
 
   TCommandQueue = class(TCollection)
   private

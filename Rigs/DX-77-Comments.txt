@@ -1,0 +1,47 @@
+	Comments for corrected version of DX-77.ini.					23.3.2005
+
+	I have tested all combinations of  commenting  and uncommenting of pmVFOA, pmVFOB, pmVFOAB...etc 
+	and enclosed version is optimal by my mean. It works fine with Hamport and Bandmaster.
+
+	Alinco's software is primarily intended for use with terminal program  like Hyperterminal in Windows etc.
+	In this reason there are some restrictions  for use it with your software:
+
+	- every command must end by hex characters '0A 0D' - by this sequence is press of key "Enter" simulated
+	  and in Alinco's reply are there characters '0A 0D' more times - that's why I cannot use ReplyEnd statement
+	  in case of variable length of reply string
+
+	- Alinco MUST reply immediatly on each known command and that's why I cannot merge more commands in 	 	  one line.  Alinco's  reply for the first command goes simultaneously with the second coomand and result is 	  	  crash and error message "COM PORT ERROR"
+
+	 - Alinco's reply has two parts in all cases:
+		 first part:      all bytes of last sended command are returned back and sequence '0A 0D' is added
+	                 second part:  in case of  SET command is seguence 'O K  0A 0D' returned
+	                                      in case of READ command is variable legth  reply string + '0A 0D' returned 
+	                                      in case of unknown command is string 'E R R O R 0A 0D' returned.
+ 
+	- Alinco's software switches positions of VFOA FRQ and VFOB FRQ in reply string  in case of switching VFO's:
+	     	 if  VFOA is active (on display)  :  NNNNNNAAAAAAAAAABBBBBBBBBB
+		    where AAAAAAAAAA is FRQ of VFOA (RX FRQ in Alinco's terminology) 
+		    and     BBBBBBBBBB is FRQ of VFOB (TX FRQ in Alinco's terminology) 
+	 	 if  VFOB is active (on display)   :  NNNNNNBBBBBBBBBBAAAAAAAAAA
+		    where AAAAAAAAAA is FRQ of VFOA (TX FRQ in Alinco's terminology) 
+		    and     BBBBBBBBBB is FRQ of VFOB (RX FRQ in Alinco's terminology) 
+
+	Use DX-77.ini with Hamport - all works fine but
+
+ 		- in right above corner displayed FRQ of second VFO is all time the same - see "switching position
+		  of FRQ in reply string" above mentioned
+		- setting of VFO's "VFOA/A, VFOB/B" are "dead"
+		- in memory functions Hamport writes and reads both frequencies and modes of VFO's  correctly   
+		- it's no way to toggle split ON/OFF  from Hamport - must be set manually
+		- it's no way to toggle RX / TX (PTT) from  Hamport - PTT must be  switched outside the program
+
+	Use DX-77.ini with Bandmaster - all works fine but
+
+		 - click and doubleclick for offset setting works fine, but no Split is toggled and offset displayed 		   	   simultaneously. Split  must be  switched by click on "Split" field or manually on the TRX. 
+		   If Split is toggled ON before clicking / doubleclicking to set offset,  all is O.K.
+		- no RED NUMBERS are there in case of  PTT is ON  (problem with variable lentgh of reply string
+		  mentioned above - pmRX and pmTX was not used)
+
+	-------------------------------------------------no comments more ----------------------------------------------------
+
+	

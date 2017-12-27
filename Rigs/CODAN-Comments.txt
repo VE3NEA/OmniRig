@@ -1,0 +1,42 @@
+The CODAN.ini file has been tested with the CODAN 9360 and should
+also work with the 9323, 9390 and 9780 models using the RS232 CAT interface
+port on the rear of the transceiver. These transceivers come up for sale on
+Ebay from time to time for relatively low cost with an excellent receiver programmable
+from 250KHz to 30MHz.
+
+The CODAN supports only four functions of Amateur radio use via the RS232 CAT port:
+
+
+Set Frequency - [pmFreq]
+Set Mode - [pmSSB_U]
+Set Mode - [pmSSB_L]
+Read Status - [STATUS1]
+
+In addition a [pmSplitOff] dummy command has been inserted to comply with the Faros requirement.
+
+The [INIT] command sets the CODAN RS232 CAT port to the ECHO=OFF mode to prevent the Command received 
+from being echoed back from the RS232 TXD port.
+
+Note!! Frequencies cannot be programmed directly as all these transceivers are channelised. 
+The CODAN models have a user selectable option to Recall channels by frequency 
+so is an ideal low cost rig to monitor the IARU HF Beacons using FAROS.
+
+For FAROS use program the CODAN with the HF Beacon channels 600Hz lower in frequency than the nominal 
+Beacon channel using USB. e.g. 14.09940.The CODAN will then select the nearest frequency 
+(programmed channel) to that sent by Faros via the RS232 CAT port. 
+
+Note that the CODAN rigs won't handle anything less than 1KHz resolution via commands to the RS232 CAT port in
+the frequency section mode although the cODAN channels can be programmed with the keypad/front panel controls 
+to 10Hz resolution.
+
+Because of this you need to add the following into the SETTINGS area of the Faros.ini file:
+
+Frequencies=14099:18109:21149:24929:28199 
+
+Dave Wright G3XOU
+
+
+
+
+
+	

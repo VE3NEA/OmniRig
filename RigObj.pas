@@ -26,49 +26,55 @@ type
 
   TRig = class(TCustomRig)
   private
+    ExtMicroFreq : Int64;
     //value to bytes
-    function FormatValue(AValue: integer; AInfo: TParamValue): TByteArray;
-    procedure ToText(Arr: TByteArray; Value: integer);
-    procedure ToBcdBS(Arr: TByteArray; Value: integer);
-    procedure ToBcdBU(Arr: TByteArray; Value: integer);
-    procedure ToBcdLS(Arr: TByteArray; Value: integer);
-    procedure ToBcdLU(Arr: TByteArray; Value: integer);
-    procedure ToBinB(Arr: TByteArray; Value: integer);
-    procedure ToBinL(Arr: TByteArray; Value: integer);
+    function FormatValue(AValue: Int64; AInfo: TParamValue): TByteArray;
+//w3sz convert from IF freq to RF freq
+    function ToRFfreq(Value: Integer) : Int64;  //W3SZ
+    //maybe these are OK as integers
+    procedure ToText(Arr: TByteArray; Value: Int64);
+    procedure ToBcdBS(Arr: TByteArray; Value: Int64);
+    procedure ToBcdBU(Arr: TByteArray; Value: Int64);
+    procedure ToBcdLS(Arr: TByteArray; Value: Int64);
+    procedure ToBcdLU(Arr: TByteArray; Value: Int64);
+    procedure ToBinB(Arr: TByteArray; Value: Int64);
+    procedure ToBinL(Arr: TByteArray; Value: Int64);
 // Added by RA6UAZ for Icom Marine Radio NMEA Command
-    procedure ToDPIcom(Arr: TByteArray; Value: integer);
-    procedure ToYaesu(Arr: TByteArray; Value: integer);
+    procedure ToDPIcom(Arr: TByteArray; Value: Int64);
+    procedure ToYaesu(Arr: TByteArray; Value: Int64);
     //bytes to value
-    function UnformatValue(AData: TByteArray; AInfo: TParamValue): integer;
-    function FromBcdBS(AData: TByteArray): integer;
-    function FromBcdBU(AData: TByteArray): integer;
-    function FromBcdLS(AData: TByteArray): integer;
-    function FromBcdLU(AData: TByteArray): integer;
-    function FromBinB(AData: TByteArray): integer;
-    function FromBinL(AData: TByteArray): integer;
-    function FromText(AData: TByteArray): integer;
+    function UnformatValue(AData: TByteArray; AInfo: TParamValue): Int64;
+    function FromBcdBS(AData: TByteArray): Int64;
+    function FromBcdBU(AData: TByteArray): Int64;
+    function FromBcdLS(AData: TByteArray): Int64;
+    function FromBcdLU(AData: TByteArray): Int64;
+    function FromBinB(AData: TByteArray): Int64;
+    function FromBinL(AData: TByteArray): Int64;
+    function FromText(AData: TByteArray): Int64;
+//w3sz convert from RF freq to IF freq
+    function ToIFfreq(Value : Int64) : Int64;     //W3SZ
 // Added by RA6UAZ for Icom Marine Radio NMEA Command
-    function FromDPIcom(AData: TByteArray): integer;
-    function FromYaesu(AData: TByteArray): integer;
-
+    function FromDPIcom(AData: TByteArray): Int64;
+    function FromYaesu(AData: TByteArray): Int64;
     function ValidateReply(AData: TByteArray; AMask: TBitMask): boolean;
     procedure StoreParam(Param: TRigParam); overload;
-    procedure StoreParam(Param: TRigParam; Value: integer); overload;
-    procedure ToTextUD(Arr: TByteArray; Value: integer);
+    procedure StoreParam(Param: TRigParam; Value: Int64); overload;
+    procedure ToTextUD(Arr: TByteArray; Value: Int64);
+
   protected
     ChangedParams: TRigParamSet;
 
     //add commands to the queue
     procedure AddCommands(ACmds: TRigCommandArray; AKind: TCommandKind); override;
     //interpret reply
-    procedure ProcessInitReply(ANumber: integer; AData: TByteArray); override;
-    procedure ProcessStatusReply(ANumber: integer; AData: TByteArray); override;
+    procedure ProcessInitReply(ANumber: Int64; AData: TByteArray); override;
+    procedure ProcessStatusReply(ANumber: Integer; AData: TByteArray); override;
     procedure ProcessWriteReply(AParam:TRigParam; AData: TByteArray); override;
     procedure ProcessCustomReply(ASender: Pointer; ACode, AData: TByteArray); override;
   public
     //add command to the queue
-    procedure AddWriteCommand(AParam: TRigParam; AValue: integer = 0); override;
-    procedure AddCustomCommand(ASender: Pointer; ACode: TByteArray; ALen: integer; AEnd: AnsiString); override;
+    procedure AddWriteCommand(AParam: TRigParam; AValue: Int64 = 0); override;
+    procedure AddCustomCommand(ASender: Pointer; ACode: TByteArray; ALen: Integer; AEnd: AnsiString); override;
   end;
 
 
@@ -127,14 +133,15 @@ begin
 end;
 
 
-procedure TRig.AddWriteCommand(AParam: TRigParam; AValue: integer);
+procedure TRig.AddWriteCommand(AParam: TRigParam; AValue: Int64);
 var
   Cmd: TRigCommand;
   NewCode: TByteArray;
   FmtValue: TByteArray;
+  strval: string;
 begin
   MainForm.Log('Generating Write command for %s', [RigCommands.ParamToStr(AParam)]);
-
+  MainForm.Log('Generating Write command for %s', [IntToStr(AValue)]);
   //is cmd supported?
   if RigCommands = nil then Exit;
   Cmd := RigCommands.WriteCmd[AParam];
@@ -213,7 +220,7 @@ begin
 end;
 
 
-procedure TRig.ProcessInitReply(ANumber: integer; AData: TByteArray);
+procedure TRig.ProcessInitReply(ANumber: Int64; AData: TByteArray);
 begin
   ValidateReply(AData, RigCommands.InitCmd[ANumber].Validation);
 end;
@@ -263,38 +270,80 @@ end;
 //------------------------------------------------------------------------------
 //                                format
 //------------------------------------------------------------------------------
-function TRig.FormatValue(AValue: integer; AInfo: TParamValue): TByteArray;
+function TRig.FormatValue(AValue: Int64; AInfo: TParamValue): TByteArray;
 var
-  Value: integer;
+  Value: Int64;
+  initLen: Integer;
+  finalLen: Integer;
+  diffLen: Integer;
+  Value2: Int64;
+  newSize:Integer;
 begin
   Value := Round(AValue * AInfo.Mult + AInfo.Add);
-  Result := nil;
-  SetLength(Result, AInfo.Len);
+  MainForm.Log('FormatValue Value is ' + Value.ToString);
+  initLen := Value.size;
 
-  if (AInfo.Format in [vfBcdLU, vfBcdBU]) and (Value < 0) then
+  Value2 := ToRFfreq(Value);
+  MainForm.IF2RF_RF.Text := Value2.ToString;
+  finalLen := Value2.Size;
+  diffLen := finalLen - initLen;
+  MainForm.Log('size difference is ' + diffLen.ToString);
+  Result := nil;
+  newSize := AInfo.Len;// + diffLen;
+  SetLength(Result, newSize);
+
+  if (AInfo.Format in [vfBcdLU, vfBcdBU]) and (Value2 < 0) then
     begin
     MainForm.Log('RIG%d: {!}user passed invalid value: %d', [RigNumber, AValue]);
     Exit;
     end;
 
   case AInfo.Format of
-    vfText:  ToText(Result, Value);
-    vfBinL:  ToBinL(Result, Value);
-    vfBinB:  ToBinB(Result, Value);
-    vfBcdLU: ToBcdLU(Result, Value);
-    vfBcdLS: ToBcdLS(Result, Value);
-    vfBcdBU: ToBcdBU(Result, Value);
-    vfBcdBS: ToBcdBS(Result, Value);
-    vfYaesu: ToYaesu(Result, Value);
+    vfText:  ToText(Result, Value2);
+    vfBinL:  ToBinL(Result, Value2);
+    vfBinB:  ToBinB(Result, Value2);
+    vfBcdLU: ToBcdLU(Result, Value2);
+    vfBcdLS: ToBcdLS(Result, Value2);
+    vfBcdBU: ToBcdBU(Result, Value2);
+    vfBcdBS: ToBcdBS(Result, Value2);
+    vfYaesu: ToYaesu(Result, Value2);
 // Added by RA6UAZ for Icom Marine Radio NMEA Command
-    vfDPIcom: ToDPIcom(Result, Value);
-    vfTextUD: ToTextUD(Result, Value);
+    vfDPIcom: ToDPIcom(Result, Value2);
+    vfTextUD: ToTextUD(Result, Value2);
     end;
 end;
 
+//w3sz convert from IF freq to RF freq
+function TRig.ToRFfreq(Value: Integer) : Int64;  //W3SZ
+var
+  RFfreq : Int64;
+  offset : Int64;
+begin
+  RFfreq := Value;
+  offset := 0;
+  if ExtMicroFreq < 50000000 then offset := 0
+  else if ExtMicroFreq < 143000000 then offset := MainForm.Sett1.offset50
+  else if ExtMicroFreq < 219000000 then offset := MainForm.Sett1.offset144
+  else if ExtMicroFreq < 419000000 then offset := MainForm.Sett1.offset222
+  else if ExtMicroFreq < 899000000 then offset := MainForm.Sett1.offset432
+  else if ExtMicroFreq < 1239000000 then offset := MainForm.Sett1.offset903
+  else if ExtMicroFreq < 2299000000 then offset := MainForm.Sett1.offset1296
+  else if ExtMicroFreq < 3299000000 then offset := MainForm.Sett1.offset2G
+  else if ExtMicroFreq < 5649000000 then offset := MainForm.Sett1.offset3G
+  else if ExtMicroFreq < 9999000000 then offset := MainForm.Sett1.offset5G
+  else if ExtMicroFreq < 23999000000 then offset := MainForm.Sett1.offset10G
+  else if ExtMicroFreq < 46999000000 then offset := MainForm.Sett1.offset24G;
+
+  RFfreq := Value + offset;
+  MainForm.IF2RF_LO.Text := offset.ToString;
+  MainForm.IF2RF_IF.Text := Value.ToString;
+
+  MainForm.Log('offset = ' + offset.ToString + sLineBreak + 'Value = ' + Value.ToString + sLineBreak + 'RFfreq = ' + RFfreq.ToString);
+  Result := RFfreq;
+end;
 
 //ASCII codes of digits
-procedure TRig.ToText(Arr: TByteArray; Value: integer);
+procedure TRig.ToText(Arr: TByteArray; Value: Int64);
 var
   Len: integer;
   S: AnsiString;
@@ -310,22 +359,22 @@ begin
 end;
 
 // Added by RA6UAZ for Icom Marine Radio NMEA Command
-procedure TRig.ToDPIcom(Arr: TByteArray; Value: integer);
+procedure TRig.ToDPIcom(Arr: TByteArray; Value: Int64);
 var
   S: AnsiString;
   F: single;
   C: Char;
 begin
-  C := DecimalSeparator;
-  DecimalSeparator := '.';
+  C := FormatSettings.DecimalSeparator;
+  FormatSettings.DecimalSeparator := '.';
   F := Value / 1000000;
   S := StringOfChar('0', Length(Arr)) + FloatToStrF(F,ffFixed,10,6);
   Move(S[Length(S)-Length(Arr)+1], Arr[0], Length(Arr));
-  DecimalSeparator := C;
+  FormatSettings.DecimalSeparator := C;
 end;
 
 
-procedure TRig.ToTextUD(Arr: TByteArray; Value: integer);
+procedure TRig.ToTextUD(Arr: TByteArray; Value: Int64);
 var
   S: AnsiString;
 begin
@@ -336,14 +385,14 @@ end;
 
 
 //integer, little endian
-procedure TRig.ToBinL(Arr: TByteArray; Value: integer);
+procedure TRig.ToBinL(Arr: TByteArray; Value: Int64);
 begin
   Move(Value, Arr[0], Min(Length(Arr), SizeOf(Value)));
 end;
 
 
 //integer, big endian
-procedure TRig.ToBinB(Arr: TByteArray; Value: integer);
+procedure TRig.ToBinB(Arr: TByteArray; Value: Int64);
 begin
   ToBinL(Arr, Value);
   BytesReverse(Arr);
@@ -351,7 +400,7 @@ end;
 
 
 //BCD big endian unsigned
-procedure TRig.ToBcdBU(Arr: TByteArray; Value: integer);
+procedure TRig.ToBcdBU(Arr: TByteArray; Value: Int64);
 var
   Chars: TByteArray;
   i: integer;
@@ -364,7 +413,7 @@ end;
 
 
 //BCD little endian unsigned
-procedure TRig.ToBcdLU(Arr: TByteArray; Value: integer);
+procedure TRig.ToBcdLU(Arr: TByteArray; Value: Int64);
 begin
   ToBcdBU(Arr, Value);
   BytesReverse(Arr);
@@ -372,7 +421,7 @@ end;
 
 
 //BCD little endian signed; sign in high byte (00 or FF)
-procedure TRig.ToBcdLS(Arr: TByteArray; Value: integer);
+procedure TRig.ToBcdLS(Arr: TByteArray; Value: Int64);
 begin
   ToBcdLU(Arr, Abs(Value));
   if Value < 0 then Arr[High(Arr)] := $FF;
@@ -380,7 +429,7 @@ end;
 
 
 //BCD big endian signed
-procedure TRig.ToBcdBS(Arr: TByteArray; Value: integer);
+procedure TRig.ToBcdBS(Arr: TByteArray; Value: Int64);
 begin
   ToBcdBU(Arr, Abs(Value));
   if Value < 0 then Arr[0] := $FF;
@@ -389,7 +438,7 @@ end;
 
 //16 bits. high bit of the 1-st byte is sign,
 //the rest is integer, absolute value, big endian (not complementary!)
-procedure TRig.ToYaesu(Arr: TByteArray; Value: integer);
+procedure TRig.ToYaesu(Arr: TByteArray; Value: Int64);
 begin
   ToBinB(Arr, Abs(Value));
   if Value < 0 then Arr[0] := Arr[0] or $80;
@@ -405,10 +454,13 @@ end;
 //------------------------------------------------------------------------------
 //                                unformat
 //------------------------------------------------------------------------------
-function TRig.UnformatValue(AData: TByteArray; AInfo: TParamValue): integer;
+function TRig.UnformatValue(AData: TByteArray; AInfo: TParamValue): Int64;
+  var
+    AnsiStr : AnsiString;
 begin
   AData := Copy(AData, AInfo.Start, AInfo.Len);
-
+  SetString(AnsiStr, PAnsiChar(@AData[0]), Length(AData));
+     MainForm.Log('AData by W3SZ is: %s', [AnsiStr]);
   if (AData = nil) or (Length(AData) <> AInfo.Len) then
     begin MainForm.Log('RIG%d: {!}reply too short', [RigNumber]); Abort; end;
 
@@ -429,23 +481,69 @@ begin
 end;
 
 
-function TRig.FromText(AData: TByteArray): integer;
+function TRig.FromText(AData: TByteArray): Int64;
 var
   S: AnsiString;
+  oldResult: Int64;
 begin
   SetLength(S, Length(AData));
-
+    MainForm.Log('Entered TRig.FromText');
+    MainForm.RF2IF_RF.Text := 'Entered TRig.FromText';
   try
     Move(Adata[0], S[1], Length(S));
-    Result := StrToInt(S);
+    oldResult := StrToInt64(S);
+    Result := ToIFfreq(oldResult);
+    MainForm.Log('Result by W3SZ is: %s', [IntToStr(oldResult)]);
+    MainForm.Log('IFFreq by W3SZ is: %s', [IntToStr(Result)]);
   except
     MainForm.Log('RIG%d: {!}invalid reply', [RigNumber]);
     raise;
   end;
 end;
 
+//convert from External Radio Microwave Frequency to IF Frequency for SDR/HDSDR
+//input External Radio Microwave Frequency 'Value', output Result = IFfreq
+function TRig.ToIFfreq(Value : Int64) : Int64;
+var
+  IFfreq : Int64;
+  offset : Int64;
+begin
+if Value > 0  then
+  begin
+  IFfreq := Value;
+  offset := 0;
+  if Value < 50000000 then offset := 0
+  else if Value < 143000000 then offset := MainForm.Sett1.offset50
+  else if Value < 219000000 then offset := MainForm.Sett1.offset144
+  else if Value < 419000000 then offset := MainForm.Sett1.offset222
+  else if Value < 899000000 then offset := MainForm.Sett1.offset432
+  else if Value < 1239000000 then offset := MainForm.Sett1.offset903
+  else if Value < 2299000000 then offset := MainForm.Sett1.offset1296
+  else if Value < 3299000000 then offset := MainForm.Sett1.offset2G
+  else if Value < 5649000000 then offset := MainForm.Sett1.offset3G
+  else if Value < 9999000000 then offset := MainForm.Sett1.offset5G
+  else if Value < 23999000000 then offset := MainForm.Sett1.offset10G
+  else if Value < 46999000000 then offset := MainForm.Sett1.offset24G;
+
+  IFfreq := Value - offset;
+  ExtMicroFreq := Value;
+
+  MainForm.RF2IF_RF.Text := Value.ToString;
+  MainForm.RF2IF_LO.Text := offset.ToString;
+  MainForm.RF2IF_IF.Text := IFfreq.ToString;
+  MainForm.Log(' From_Rig_offset = ' + offset.ToString + sLineBreak + 'From_Rig_Value = ' + ExtMicroFreq.ToString + sLineBreak + 'From_Rig_IFfreq = ' + IFfreq.ToString);
+
+  Result := IFfreq;
+  end
+  else
+  begin
+    Result :=Value;
+  end;
+end;
+
+
 // Added by RA6UAZ for Icom Marine Radio NMEA Command
-function TRig.FromDPIcom(AData: TByteArray): integer;
+function TRig.FromDPIcom(AData: TByteArray): Int64;
 var
   S: AnsiString;
   F: single;
@@ -454,7 +552,7 @@ var
   i: integer;
 begin
   try
-    DecimalSeparator := '.';
+    FormatSettings.DecimalSeparator := '.';
     SetLength(S, Length(AData));
     Move(Adata[0], S[1], Length(S));
     for i:=1 to Length(S) do
@@ -468,7 +566,7 @@ begin
 end;
 
 
-function TRig.FromBinL(AData: TByteArray): integer;
+function TRig.FromBinL(AData: TByteArray): Int64;
 var
   B: integer;
 begin
@@ -480,14 +578,14 @@ begin
 end;
 
 
-function TRig.FromBinB(AData: TByteArray): integer;
+function TRig.FromBinB(AData: TByteArray): Int64;
 begin
   BytesReverse(AData);
   Result := FromBinL(AData);
 end;
 
 
-function TRig.FromBcdBU(AData: TByteArray): integer;
+function TRig.FromBcdBU(AData: TByteArray): Int64;
 var
   S: AnsiString;
   i: integer;
@@ -500,7 +598,7 @@ begin
     end;
 
   try
-    Result := StrToInt(S);
+    Result := StrToInt64(S);
   except
     MainForm.Log('RIG%d: {!}invalid BCD value', [RigNumber]);
     raise;
@@ -508,14 +606,14 @@ begin
 end;
 
 
-function TRig.FromBcdLU(AData: TByteArray): integer;
+function TRig.FromBcdLU(AData: TByteArray): Int64;
 begin
   BytesReverse(AData);
   Result := FromBcdBU(Adata);
 end;
 
 
-function TRig.FromBcdBS(AData: TByteArray): integer;
+function TRig.FromBcdBS(AData: TByteArray): Int64;
 begin
   if AData[0] = 0 then Result := 1 else Result := -1;
   AData[0] := 0;
@@ -523,7 +621,7 @@ begin
 end;
 
 
-function TRig.FromBcdLS(AData: TByteArray): integer;
+function TRig.FromBcdLS(AData: TByteArray): Int64;
 begin
   BytesReverse(AData);
   Result := FromBcdBS(AData);
@@ -531,8 +629,8 @@ end;
 
 
 //16 bits. high bit of the 1-st byte is sign,
-//the rest is integer, absolute value, big endian (not complementary!)
-function TRig.FromYaesu(AData: TByteArray): integer;
+//the rest is Int64, absolute value, big endian (not complementary!)
+function TRig.FromYaesu(AData: TByteArray): Int64;
 begin
 
   if (AData[0] and $80) = 0 then Result := 1 else Result := -1;
@@ -570,9 +668,9 @@ begin
 end;
 
 
-procedure TRig.StoreParam(Param: TRigParam; Value: integer);
+procedure TRig.StoreParam(Param: TRigParam; Value: Int64);
 var
-  PValue: PInteger;
+  PValue: PInt64;
 begin
   case Param of
     pmFreqA:     PValue := @FFreqA;

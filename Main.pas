@@ -21,7 +21,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   ComCtrls, ExtCtrls, StdCtrls, CustRig, RigObj, RigSett, IniFiles, RigCmds,
   AppEvnts, ComServ, AutoApp, AlStrLst, Spin, ShellApi, WinSpool,
-  ShlObj;
+  ShlObj, Vcl.ToolWin;
 
 type
   TMainForm = class(TForm)
@@ -62,6 +62,45 @@ type
     Label18: TLabel;
     Label11: TLabel;
     DtrComboBox: TComboBox;
+    Label19: TLabel;
+    Label20: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
+    Label25: TLabel;
+    Label26: TLabel;
+    Label27: TLabel;
+    Label28: TLabel;
+    Label29: TLabel;
+    Label30: TLabel;
+    Label31: TLabel;
+    Box144: TEdit;
+    Box222: TEdit;
+    Box432: TEdit;
+    Box903: TEdit;
+    Box1296: TEdit;
+    Box2G: TEdit;
+    Box3G: TEdit;
+    Box5G: TEdit;
+    Box10G: TEdit;
+    Box24G: TEdit;
+    Label32: TLabel;
+    Box50: TEdit;
+    Label33: TLabel;
+    Label35: TLabel;
+    Label36: TLabel;
+    RF2IF_LO: TEdit;
+    RF2IF_IF: TEdit;
+    Label37: TLabel;
+    Label38: TLabel;
+    Label39: TLabel;
+    Label40: TLabel;
+    IF2RF_RF: TEdit;
+    IF2RF_LO: TEdit;
+    IF2RF_IF: TEdit;
+    RF2IF_RF: TEdit;
+    Label41: TLabel;
     procedure OkBtnClick(Sender: TObject);
     procedure CancelBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -225,7 +264,7 @@ end;
 procedure TMainForm.ListBaudRates;
 const
   //standard baud rates defined in Windows.pas as constants
-  BaudRates: array[0..14] of integer = (CBR_110, CBR_300, CBR_600, CBR_1200,
+  BaudRates: array[0..14] of Integer = (CBR_110, CBR_300, CBR_600, CBR_1200,
     CBR_2400, CBR_4800, CBR_9600, CBR_14400, CBR_19200, CBR_38400, CBR_56000,
     CBR_57600, CBR_115200, CBR_128000, CBR_256000);
 var

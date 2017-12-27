@@ -17,25 +17,24 @@ unit AutoRig;
 interface
 
 uses
-  ComObj, ActiveX, OmniRig_TLB, StdVcl, RigObj, RigCmds, ByteFuns, AutoPort,
-  Variants;
+  Windows, SysUtils, ComObj, ActiveX, OmniRig_TLB, StdVcl, RigObj,  RigCmds, ByteFuns, AutoPort, Variants;
 
 type
   TRigX = class(TAutoObject, IRigX)
   protected
     function  Get_RigType: WideString; safecall;
-    function  Get_ReadableParams: Integer; safecall;
-    function  Get_WriteableParams: Integer; safecall;
+    function  Get_ReadableParams: Int64; safecall;
+    function  Get_WriteableParams: Int64; safecall;
     function  IsParamReadable(Param: RigParamX): WordBool; safecall;
     function  IsParamWriteable(Param: RigParamX): WordBool; safecall;
     function  Get_Status: RigStatusX; safecall;
     function  Get_StatusStr: WideString; safecall;
-    function  Get_Freq: Integer; safecall;
-    procedure Set_Freq(Value: Integer); safecall;
-    function  Get_FreqA: Integer; safecall;
-    procedure Set_FreqA(Value: Integer); safecall;
-    function  Get_FreqB: Integer; safecall;
-    procedure Set_FreqB(Value: Integer); safecall;
+    function  Get_Freq: Int64; safecall;
+    procedure Set_Freq(Value: Int64); safecall;
+    function  Get_FreqA: Int64; safecall;
+    procedure Set_FreqA(Value: Int64); safecall;
+    function  Get_FreqB: Int64; safecall;
+    procedure Set_FreqB(Value: Int64); safecall;
     function  Get_RitOffset: Integer; safecall;
     procedure Set_RitOffset(Value: Integer); safecall;
     function  Get_Pitch: Integer; safecall;
@@ -53,14 +52,14 @@ type
     function  Get_Mode: RigParamX; safecall;
     procedure Set_Mode(Value: RigParamX); safecall;
     procedure ClearRit; safecall;
-    procedure SetSplitMode(RxFreq: Integer; TxFreq: Integer); safecall;
+    procedure SetSplitMode(RxFreq: Int64; TxFreq: Int64); safecall;
     function  FrequencyOfTone(Tone: Integer): Integer; safecall;
-    procedure SendCustomCommand(Command: OleVariant; ReplyLength: Integer;
+    procedure SendCustomCommand(Command: OleVariant; ReplyLength: Int64;
       ReplyEnd: OleVariant); safecall;
-//    function GetAltFrequency: Integer; safecall;
-    function GetRxFrequency: Integer; safecall;
-    function GetTxFrequency: Integer; safecall;
-    procedure SetSimplexMode(Freq: Integer); safecall;
+//    function GetAltFrequency: Int64; safecall;
+    function GetRxFrequency: Int64; safecall;
+    function GetTxFrequency: Int64; safecall;
+    procedure SetSimplexMode(Freq: Int64); safecall;
     function Get_PortBits: IPortBits; safecall;
   public
     Parent: Pointer;
@@ -107,7 +106,7 @@ begin
 end;
 
 
-function TRigX.Get_ReadableParams: Integer;
+function TRigX.Get_ReadableParams: Int64;
 begin
   if FRig.RigCommands = nil
     then Result := 0
@@ -115,7 +114,7 @@ begin
 end;
 
 
-function TRigX.Get_WriteableParams: Integer;
+function TRigX.Get_WriteableParams: Int64;
 begin
   if FRig.RigCommands = nil
     then Result := 0
@@ -155,19 +154,19 @@ end;
 //------------------------------------------------------------------------------
 //                                 get
 //------------------------------------------------------------------------------
-function TRigX.Get_Freq: Integer;
+function TRigX.Get_Freq: Int64;
 begin
   Result := FRig.Freq;
 end;
 
 
-function TRigX.Get_FreqA: Integer;
+function TRigX.Get_FreqA: Int64;
 begin
   Result := FRig.FreqA;
 end;
 
 
-function TRigX.Get_FreqB: Integer;
+function TRigX.Get_FreqB: Int64;
 begin
   Result := FRig.FreqB;
 end;
@@ -227,17 +226,17 @@ end;
 //------------------------------------------------------------------------------
 //                                 set
 //------------------------------------------------------------------------------
-procedure TRigX.Set_Freq(Value: Integer);
+procedure TRigX.Set_Freq(Value: Int64);
 begin
  FRig.Freq := Value;
 end;
 
-procedure TRigX.Set_FreqA(Value: Integer);
+procedure TRigX.Set_FreqA(Value: Int64);
 begin
  FRig.FreqA := Value;
 end;
 
-procedure TRigX.Set_FreqB(Value: Integer);
+procedure TRigX.Set_FreqB(Value: Int64);
 begin
  FRig.FreqB := Value;
 end;
@@ -296,7 +295,7 @@ begin
 end;
 
 
-procedure TRigX.SetSimplexMode(Freq: Integer);
+procedure TRigX.SetSimplexMode(Freq: Int64);
 var
   WrParams: TRigParamSet;
 begin
@@ -353,7 +352,7 @@ end;
 
 
 
-procedure TRigX.SetSplitMode(RxFreq, TxFreq: Integer);
+procedure TRigX.SetSplitMode(RxFreq, TxFreq: Int64);
 var
   WrParams: TRigParamSet;
 begin
@@ -411,7 +410,7 @@ end;
 
 
 procedure TRigX.SendCustomCommand(Command: OleVariant;
-  ReplyLength: Integer; ReplyEnd: OleVariant);
+  ReplyLength: Int64; ReplyEnd: OleVariant);
 var
    Cmd: TByteArray;
    Trm: AnsiString;
@@ -447,7 +446,7 @@ end;
 
 
 {
-function TRigX.GetAltFrequency: Integer;
+function TRigX.GetAltFrequency: Int64;
 begin
   Result := 0;
 
@@ -470,7 +469,7 @@ end;
 }
 
 
-function TRigX.GetRxFrequency: Integer;
+function TRigX.GetRxFrequency: Int64;
 var
   RdParams: TRigParamSet;
 begin
@@ -496,7 +495,7 @@ begin
 end;
 
 
-function TRigX.GetTxFrequency: Integer;
+function TRigX.GetTxFrequency: Int64;
 var
   RdParams: TRigParamSet;
 begin

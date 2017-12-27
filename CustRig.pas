@@ -18,7 +18,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Forms, AlComPrt, RigCmds, SyncObjs,
-  CmdQue, ByteFuns;
+  CmdQue, ByteFuns, StrUtils;
 
 
 
@@ -51,9 +51,9 @@ type
     procedure SentEvent(Sender: TObject);
     procedure CtsDsrEvent(Sender: TObject);
 
-    procedure SetFreq(const Value: integer);
-    procedure SetFreqA(const Value: integer);
-    procedure SetFreqB(const Value: integer);
+    procedure SetFreq(const Value: Int64);
+    procedure SetFreqA(const Value: Int64);
+    procedure SetFreqB(const Value: Int64);
     procedure SetRitOffset(const Value: integer);
     procedure SetPitch(const Value: integer);
     procedure SetVfo(const Value: TRigParam);
@@ -64,12 +64,13 @@ type
     procedure SetMode(const Value: TRigParam);
     procedure SetRigCommands(const Value: TRigCommands);
     function GetSplit: TRigParam;
+
   protected
     FQueue: TCommandQueue;
 
-    FFreq: integer;
-    FFreqA: integer;
-    FFreqB: integer;
+    FFreq: Int64;
+    FFreqA: Int64;
+    FFreqB: Int64;
     FRitOffset: integer;
     FPitch: integer;
     FVfo: TRigParam;
@@ -84,7 +85,7 @@ type
     procedure AddCommands(ACmds: TRigCommandArray; AKind: TCommandKind);
       virtual; abstract;
 
-    procedure ProcessInitReply(ANumber: integer; AData: TByteArray);
+    procedure ProcessInitReply(ANumber: Int64; AData: TByteArray);
       virtual; abstract;
     procedure ProcessStatusReply(ANumber: integer; AData: TByteArray);
       virtual; abstract;
@@ -102,7 +103,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure AddWriteCommand(AParam: TRigParam; AValue: integer = 0);
+    procedure AddWriteCommand(AParam: TRigParam; AValue: Int64 = 0);
       virtual; abstract;
     procedure AddCustomCommand(ASender: Pointer; ACode: TByteArray;
       ALen: integer; AEnd: AnsiString); virtual; abstract;
@@ -122,9 +123,9 @@ type
     property Status: TRigCtlStatus read GetStatus;
 
     //current rig parameters
-    property Freq: integer read FFreq write SetFreq;
-    property FreqA: integer read FFreqA write SetFreqA;
-    property FreqB: integer read FFreqB write SetFreqB;
+    property Freq: Int64 read FFreq write SetFreq;
+    property FreqA: Int64 read FFreqA write SetFreqA;
+    property FreqB: Int64 read FFreqB write SetFreqB;
     property Pitch: integer read FPitch write SetPitch;
     property RitOffset: integer read FRitOffset write SetRitOffset;
     property Vfo: TRigParam read FVfo write SetVfo;
@@ -418,12 +419,10 @@ begin
         end;
       MainForm.Log('RIG%d sending %s command: %s',
         [RigNumber, S, BytesToHex(FQueue[0].Code)]);
-
       //send command
       FQueue.Phase := phSending;
       FDeadLineTime := Now + DinMS * TimeoutMs;
       with FQueue[0] do ComPort.Send(BytesToStr(Code));
-
       //{!} debug
       MainForm.Log('RIG%d ComPort.Send called, %d bytes in queue', [RigNumber, ComPort.TxQueue]);
     finally
@@ -515,19 +514,19 @@ begin
   ComNotifyRigType(RigNumber);
 end;
 
-procedure TCustomRig.SetFreq(const Value: integer);
+procedure TCustomRig.SetFreq(const Value: Int64);
 begin
   if Enabled then AddWriteCommand(pmFreq, Value);
 end;
 
 
-procedure TCustomRig.SetFreqA(const Value: integer);
+procedure TCustomRig.SetFreqA(const Value: Int64);
 begin
   if Enabled then AddWriteCommand(pmFreqA, Value);
 end;
 
 
-procedure TCustomRig.SetFreqB(const Value: integer);
+procedure TCustomRig.SetFreqB(const Value: Int64);
 begin
   if Enabled then AddWriteCommand(pmFreqB, Value);
 end;

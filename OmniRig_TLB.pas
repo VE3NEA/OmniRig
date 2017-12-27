@@ -164,7 +164,7 @@ type
     procedure VisibleChange; dispid 1;
     procedure RigTypeChange(RigNumber: Integer); dispid 2;
     procedure StatusChange(RigNumber: Integer); dispid 3;
-    procedure ParamsChange(RigNumber: Integer; Params: Integer); dispid 4;
+    procedure ParamsChange(RigNumber: Integer; Params: Int64); dispid 4;
     procedure CustomReply(RigNumber: Integer; Command: OleVariant; Reply: OleVariant); dispid 5;
   end;
 
@@ -176,18 +176,18 @@ type
   IRigX = interface(IDispatch)
     ['{D30A7E51-5862-45B7-BFFA-6415917DA0CF}']
     function  Get_RigType: WideString; safecall;
-    function  Get_ReadableParams: Integer; safecall;
-    function  Get_WriteableParams: Integer; safecall;
+    function  Get_ReadableParams: Int64; safecall;
+    function  Get_WriteableParams: Int64; safecall;
     function  IsParamReadable(Param: RigParamX): WordBool; safecall;
     function  IsParamWriteable(Param: RigParamX): WordBool; safecall;
     function  Get_Status: RigStatusX; safecall;
     function  Get_StatusStr: WideString; safecall;
-    function  Get_Freq: Integer; safecall;
-    procedure Set_Freq(Value: Integer); safecall;
-    function  Get_FreqA: Integer; safecall;
-    procedure Set_FreqA(Value: Integer); safecall;
-    function  Get_FreqB: Integer; safecall;
-    procedure Set_FreqB(Value: Integer); safecall;
+    function  Get_Freq: Int64; safecall;
+    procedure Set_Freq(Value: Int64); safecall;
+    function  Get_FreqA: Int64; safecall;
+    procedure Set_FreqA(Value: Int64); safecall;
+    function  Get_FreqB: Int64; safecall;
+    procedure Set_FreqB(Value: Int64); safecall;
     function  Get_RitOffset: Integer; safecall;
     procedure Set_RitOffset(Value: Integer); safecall;
     function  Get_Pitch: Integer; safecall;
@@ -205,21 +205,21 @@ type
     function  Get_Mode: RigParamX; safecall;
     procedure Set_Mode(Value: RigParamX); safecall;
     procedure ClearRit; safecall;
-    procedure SetSimplexMode(Freq: Integer); safecall;
-    procedure SetSplitMode(RxFreq: Integer; TxFreq: Integer); safecall;
+    procedure SetSimplexMode(Freq: Int64); safecall;
+    procedure SetSplitMode(RxFreq: Int64; TxFreq: Int64); safecall;
     function  FrequencyOfTone(Tone: Integer): Integer; safecall;
-    procedure SendCustomCommand(Command: OleVariant; ReplyLength: Integer; ReplyEnd: OleVariant); safecall;
-    function  GetRxFrequency: Integer; safecall;
-    function  GetTxFrequency: Integer; safecall;
+    procedure SendCustomCommand(Command: OleVariant; ReplyLength: Int64; ReplyEnd: OleVariant); safecall;
+    function  GetRxFrequency: Int64; safecall;
+    function  GetTxFrequency: Int64; safecall;
     function  Get_PortBits: IPortBits; safecall;
     property RigType: WideString read Get_RigType;
-    property ReadableParams: Integer read Get_ReadableParams;
-    property WriteableParams: Integer read Get_WriteableParams;
+    property ReadableParams: Int64 read Get_ReadableParams;
+    property WriteableParams: Int64 read Get_WriteableParams;
     property Status: RigStatusX read Get_Status;
     property StatusStr: WideString read Get_StatusStr;
-    property Freq: Integer read Get_Freq write Set_Freq;
-    property FreqA: Integer read Get_FreqA write Set_FreqA;
-    property FreqB: Integer read Get_FreqB write Set_FreqB;
+    property Freq: Int64 read Get_Freq write Set_Freq;
+    property FreqA: Int64 read Get_FreqA write Set_FreqA;
+    property FreqB: Int64 read Get_FreqB write Set_FreqB;
     property RitOffset: Integer read Get_RitOffset write Set_RitOffset;
     property Pitch: Integer read Get_Pitch write Set_Pitch;
     property Vfo: RigParamX read Get_Vfo write Set_Vfo;
@@ -239,15 +239,15 @@ type
   IRigXDisp = dispinterface
     ['{D30A7E51-5862-45B7-BFFA-6415917DA0CF}']
     property RigType: WideString readonly dispid 1;
-    property ReadableParams: Integer readonly dispid 2;
-    property WriteableParams: Integer readonly dispid 3;
+    property ReadableParams: Int64 readonly dispid 2;
+    property WriteableParams: Int64 readonly dispid 3;
     function  IsParamReadable(Param: RigParamX): WordBool; dispid 4;
     function  IsParamWriteable(Param: RigParamX): WordBool; dispid 5;
     property Status: RigStatusX readonly dispid 6;
     property StatusStr: WideString readonly dispid 7;
-    property Freq: Integer dispid 8;
-    property FreqA: Integer dispid 9;
-    property FreqB: Integer dispid 10;
+    property Freq: Int64 dispid 8;
+    property FreqA: Int64 dispid 9;
+    property FreqB: Int64 dispid 10;
     property RitOffset: Integer dispid 11;
     property Pitch: Integer dispid 12;
     property Vfo: RigParamX dispid 13;
@@ -257,12 +257,12 @@ type
     property Tx: RigParamX dispid 17;
     property Mode: RigParamX dispid 18;
     procedure ClearRit; dispid 19;
-    procedure SetSimplexMode(Freq: Integer); dispid 20;
-    procedure SetSplitMode(RxFreq: Integer; TxFreq: Integer); dispid 21;
+    procedure SetSimplexMode(Freq: Int64); dispid 20;
+    procedure SetSplitMode(RxFreq: Int64; TxFreq: Int64); dispid 21;
     function  FrequencyOfTone(Tone: Integer): Integer; dispid 22;
-    procedure SendCustomCommand(Command: OleVariant; ReplyLength: Integer; ReplyEnd: OleVariant); dispid 23;
-    function  GetRxFrequency: Integer; dispid 24;
-    function  GetTxFrequency: Integer; dispid 25;
+    procedure SendCustomCommand(Command: OleVariant; ReplyLength: Int64; ReplyEnd: OleVariant); dispid 23;
+    function  GetRxFrequency: Int64; dispid 24;
+    function  GetTxFrequency: Int64; dispid 25;
     property PortBits: IPortBits readonly dispid 26;
   end;
 
