@@ -443,7 +443,7 @@ object MainForm: TMainForm
         Top = 156
         Width = 110
         Height = 13
-        Caption = 'Copyright '#169' 2003-2014'
+        Caption = 'Copyright '#169' 2003-2018'
       end
       object Label17: TLabel
         Left = 26
@@ -472,13 +472,13 @@ object MainForm: TMainForm
   end
   object ApplicationEvents1: TApplicationEvents
     OnMessage = ApplicationEvents1Message
-    Left = 104
-    Top = 4
+    Left = 56
+    Top = 324
   end
   object Timer1: TTimer
     Interval = 100
     OnTimer = Timer1Timer
-    Left = 132
-    Top = 4
+    Left = 92
+    Top = 324
   end
 end

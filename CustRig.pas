@@ -268,7 +268,7 @@ end;
 
 procedure TCustomRig.SentEvent(Sender: TObject);
 begin
-  MainForm.Log('RIG%d data sent, %d bytes in queue', [RigNumber, ComPort.TxQueue]);
+  MainForm.Log('RIG%d data sent, %d bytes in TX buffer', [RigNumber, ComPort.TxQueue]);
 
   if ComPort.TxQueue > 0 then Exit;
 
@@ -310,6 +310,15 @@ begin
 
     if ComPort.RxBuffer <> '' then  Data := StrToBytes(ComPort.RxBuffer);
     ComPort.PurgeRx;
+
+    //some COM ports do not send EV_TXEMPTY
+
+    if (FQueue.Phase = phSending) {and (ComPort.TxQueue = 0)} then
+      begin
+      FQueue.Phase := phReceiving;
+      MainForm.Log('RIG%d %d bytes in TX buffer, accepting reply', [RigNumber, ComPort.TxQueue]);
+      end;
+
 
     if FQueue.Phase = phReceiving
       then MainForm.Log('RIG%d reply received: %s',
@@ -425,7 +434,7 @@ begin
       with FQueue[0] do ComPort.Send(BytesToStr(Code));
 
       //{!} debug
-      MainForm.Log('RIG%d ComPort.Send called, %d bytes in queue', [RigNumber, ComPort.TxQueue]);
+      MainForm.Log('RIG%d ComPort.Send called, %d bytes in TX buffer', [RigNumber, ComPort.TxQueue]);
     finally
       Unlock;
     end;
@@ -470,7 +479,7 @@ begin
       case FQueue.Phase of
         phSending:
           begin
-          MainForm.Log('RIG%d {!}send timeout, %d bytes still in buffer',
+          MainForm.Log('RIG%d {!}send timeout, %d bytes still in TX buffer',
             [RigNumber, ComPort.TxQueue]);
           //do not send the remaining part
           ComPort.PurgeTx;
@@ -480,7 +489,7 @@ begin
           end;
         phReceiving:
           begin
-          MainForm.Log('RIG%d {!}recv timeout. Rx Buffer: "%s"',
+          MainForm.Log('RIG%d {!}recv timeout. RX Buffer: "%s"',
             [RigNumber, StrToHex(ComPort.RxBuffer)]);
           //waste partial reply
           ComPort.PurgeRx;
