@@ -96,8 +96,8 @@ type
   public
     RigNumber: integer;
     PollMs, TimeoutMs: integer;
-
     ComPort: TAlCommPort;
+    LastWrittenMode: TRigParam;
 
     constructor Create;
     destructor Destroy; override;
@@ -113,6 +113,7 @@ type
     procedure Stop;
     procedure TimerTick;
     procedure CheckQueue;
+    procedure ForceVfo(const Value: TRigParam);
 
     function GetStatusStr: AnsiString;
 
@@ -219,6 +220,7 @@ begin
 
   if Value then Start else Stop;
   ComNotifyStatus(RigNumber);
+  LastWrittenMode := pmNone;
 end;
 
 
@@ -243,7 +245,11 @@ begin
     Unlock;
   end;
 
-  CheckQueue;
+  if ComPort.Open
+    then CheckQueue
+    else MainForm.Log('RIG%d {!} Unable to open port', [RigNumber]);
+
+//    else Timer.Enabled := true;
 end;
 
 
@@ -340,7 +346,7 @@ begin
           ckCustom: ProcessCustomReply(CustSender, Code, Data);
           end;
     except on E: Exception do
-      begin MainForm.Log('{!}Processing reply: %s', [E.Message]); end;
+      begin MainForm.Log('RIG% {!}Processing reply: %s', [RigNumber, E.Message]); end;
     end;
 
     //we are receiving data, therefore we are online
@@ -473,6 +479,7 @@ begin
         begin
         FOnline := false;
         ComNotifyStatus(RigNumber);
+        LastWrittenMode := pmNone;
         end;
 
       //cancel pending operation
@@ -532,13 +539,13 @@ end;
 
 procedure TCustomRig.SetFreqA(const Value: integer);
 begin
-  if Enabled then AddWriteCommand(pmFreqA, Value);
+  if Enabled and (Value <> FFreqA) then AddWriteCommand(pmFreqA, Value);
 end;
 
 
 procedure TCustomRig.SetFreqB(const Value: integer);
 begin
-  if Enabled then AddWriteCommand(pmFreqB, Value);
+  if Enabled and (Value <> FFreqB) then AddWriteCommand(pmFreqB, Value);
 end;
 
 procedure TCustomRig.SetMode(const Value: TRigParam);
@@ -556,19 +563,19 @@ end;
 
 procedure TCustomRig.SetRitOffset(const Value: integer);
 begin
-  if Enabled then AddWriteCommand(pmRitOffset, Value);
+  if Enabled and (Value <> FRitOffset) then AddWriteCommand(pmRitOffset, Value);
 end;
 
 procedure TCustomRig.SetRit(const Value: TRigParam);
 begin
-  if Enabled and (Value in RitOnParams) then AddWriteCommand(Value);
+  if Enabled and (Value in RitOnParams) and (Value <> FRit) then AddWriteCommand(Value);
 end;
 
 procedure TCustomRig.SetSplit(const Value: TRigParam);
 begin
   if not (Enabled and (Value in SplitParams)) then Exit;
 
-  if Value in RigCommands.WriteableParams then AddWriteCommand(Value)
+  if (Value in RigCommands.WriteableParams) and (Value <> Split) then AddWriteCommand(Value)
 
   else if Value = pmSplitOn then
     begin
@@ -590,12 +597,18 @@ end;
 
 procedure TCustomRig.SetVfo(const Value: TRigParam);
 begin
-  if Enabled and (Value in VfoParams) then AddWriteCommand(Value);
+  if Enabled and (Value in VfoParams) and (Value <> FVfo) then AddWriteCommand(Value);
 end;
+
+procedure TCustomRig.ForceVfo(const Value: TRigParam);
+begin
+  if Enabled then AddWriteCommand(Value);
+end;
+
 
 procedure TCustomRig.SetXit(const Value: TRigParam);
 begin
-  if Enabled and (Value in XitOnParams) then AddWriteCommand(Value);
+  if Enabled and (Value in XitOnParams) and (Value <> Xit) then AddWriteCommand(Value);
 end;
 
 

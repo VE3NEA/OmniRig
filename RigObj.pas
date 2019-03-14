@@ -133,15 +133,15 @@ var
   NewCode: TByteArray;
   FmtValue: TByteArray;
 begin
-  MainForm.Log('Generating Write command for %s', [RigCommands.ParamToStr(AParam)]);
+  MainForm.Log('RIG%d Generating Write command for %s', [RigNumber, RigCommands.ParamToStr(AParam)]);
 
   //is cmd supported?
   if RigCommands = nil then Exit;
   Cmd := RigCommands.WriteCmd[AParam];
   if Cmd.Code = nil then
     begin
-    MainForm.Log('{!}Write command not supported for %s',
-      [RigCommands.ParamToStr(AParam)]);
+    MainForm.Log('RIG%d {!}Write command not supported for %s',
+      [RigNumber, RigCommands.ParamToStr(AParam)]);
     Exit;
     end;
 
@@ -155,7 +155,7 @@ begin
         raise Exception.Create('{!}Value too long');
       Move(FmtValue[0], NewCode[Cmd.Value.Start], Cmd.Value.Len);
     except on E: Exception do
-      begin MainForm.Log('{!}Generating command: %s', [E.Message]); end;
+      begin MainForm.Log('RIG% {!}Generating command: %s', [RigNumber, E.Message]); end;
     end;
 
 
@@ -564,6 +564,12 @@ begin
 
   PParam^ := Param;
   Include(ChangedParams, Param);
+
+  //unsolved problem:
+  //there is no command to read the mode of the other VFO,
+  //its change goes undetected.
+  if (Param in ModeParams) and (Param <> LastWrittenMode)
+    then LastWrittenMode := pmNone;
 
   MainForm.Log('RIG%d status changed: %s enabled',
     [RigNumber, RigCommands.ParamToStr(Param)]);

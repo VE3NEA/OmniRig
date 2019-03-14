@@ -104,6 +104,7 @@ type
     Sett1: TRigSettings;
     Sett2: TRigSettings;
 
+
     procedure ForceForeground;
     function GetVersion: integer;
     procedure Log(Msg: AnsiString); overload;
