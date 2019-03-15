@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 116
   BorderStyle = bsDialog
   Caption = 'Omni-Rig 64 Settings'
-  ClientHeight = 719
+  ClientHeight = 693
   ClientWidth = 438
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -55,12 +55,13 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 686
+    Top = 660
     Width = 438
     Height = 33
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitTop = 686
     DesignSize = (
       438
       33)
@@ -93,7 +94,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 530
-    Height = 686
+    Height = 660
     Align = alLeft
     Anchors = [akLeft, akTop, akRight, akBottom]
     DockSite = True
@@ -105,14 +106,16 @@ object MainForm: TMainForm
     TabIndex = 0
     OnChange = TabControl1Change
     OnChanging = TabControl1Changing
+    ExplicitHeight = 686
     object Panel2: TPanel
       Left = 4
       Top = 24
       Width = 206
-      Height = 658
+      Height = 632
       Align = alLeft
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitHeight = 633
       object Label1: TLabel
         Left = 14
         Top = 43
@@ -223,7 +226,7 @@ object MainForm: TMainForm
       end
       object Label23: TLabel
         Left = 14
-        Top = 385
+        Top = 380
         Width = 43
         Height = 13
         Caption = '222 MHz'
@@ -231,7 +234,7 @@ object MainForm: TMainForm
       end
       object Label24: TLabel
         Left = 14
-        Top = 417
+        Top = 407
         Width = 43
         Height = 13
         Caption = '432 MHz'
@@ -239,7 +242,7 @@ object MainForm: TMainForm
       end
       object Label25: TLabel
         Left = 14
-        Top = 449
+        Top = 434
         Width = 43
         Height = 13
         Caption = '903 MHz'
@@ -247,7 +250,7 @@ object MainForm: TMainForm
       end
       object Label26: TLabel
         Left = 14
-        Top = 481
+        Top = 464
         Width = 49
         Height = 13
         Caption = '1296 MHz'
@@ -255,7 +258,7 @@ object MainForm: TMainForm
       end
       object Label27: TLabel
         Left = 14
-        Top = 513
+        Top = 491
         Width = 30
         Height = 13
         Caption = '2 GHz'
@@ -263,7 +266,7 @@ object MainForm: TMainForm
       end
       object Label28: TLabel
         Left = 14
-        Top = 545
+        Top = 518
         Width = 30
         Height = 13
         Caption = '3 GHz'
@@ -271,7 +274,7 @@ object MainForm: TMainForm
       end
       object Label29: TLabel
         Left = 14
-        Top = 573
+        Top = 548
         Width = 30
         Height = 13
         Caption = '5 GHz'
@@ -279,7 +282,7 @@ object MainForm: TMainForm
       end
       object Label30: TLabel
         Left = 14
-        Top = 601
+        Top = 573
         Width = 36
         Height = 13
         Caption = '10 GHz'
@@ -287,7 +290,7 @@ object MainForm: TMainForm
       end
       object Label31: TLabel
         Left = 14
-        Top = 633
+        Top = 599
         Width = 36
         Height = 13
         Caption = '24 GHz'
@@ -445,56 +448,56 @@ object MainForm: TMainForm
       end
       object Box432: TEdit
         Left = 79
-        Top = 414
+        Top = 407
         Width = 106
         Height = 21
         TabOrder = 12
       end
       object Box903: TEdit
         Left = 79
-        Top = 446
+        Top = 434
         Width = 106
         Height = 21
         TabOrder = 13
       end
       object Box1296: TEdit
         Left = 79
-        Top = 478
+        Top = 461
         Width = 106
         Height = 21
         TabOrder = 14
       end
       object Box2G: TEdit
         Left = 79
-        Top = 510
+        Top = 488
         Width = 106
         Height = 21
         TabOrder = 15
       end
       object Box3G: TEdit
         Left = 79
-        Top = 542
+        Top = 515
         Width = 106
         Height = 21
         TabOrder = 16
       end
       object Box5G: TEdit
         Left = 79
-        Top = 570
+        Top = 545
         Width = 106
         Height = 21
         TabOrder = 17
       end
       object Box10G: TEdit
         Left = 79
-        Top = 598
+        Top = 572
         Width = 106
         Height = 21
         TabOrder = 18
       end
       object Box24G: TEdit
         Left = 79
-        Top = 625
+        Top = 599
         Width = 106
         Height = 21
         TabOrder = 19
@@ -511,16 +514,17 @@ object MainForm: TMainForm
       Left = 210
       Top = 24
       Width = 316
-      Height = 658
+      Height = 632
       Align = alClient
       BevelOuter = bvLowered
       UseDockManager = False
       DockSite = True
       TabOrder = 1
       Visible = False
+      ExplicitHeight = 658
       DesignSize = (
         316
-        658)
+        632)
       object Label8: TLabel
         Left = 69
         Top = 31
@@ -614,7 +618,7 @@ object MainForm: TMainForm
       end
       object Label15: TLabel
         Left = 8
-        Top = 636
+        Top = 610
         Width = 184
         Height = 13
         Cursor = crHandPoint
@@ -634,11 +638,11 @@ object MainForm: TMainForm
         Top = 156
         Width = 110
         Height = 13
-        Caption = 'Copyright '#169' 2003-2014'
+        Caption = 'Copyright '#169' 2003-2019'
       end
       object Label17: TLabel
         Left = 26
-        Top = 573
+        Top = 547
         Width = 144
         Height = 13
         Cursor = crHandPoint
@@ -826,13 +830,13 @@ object MainForm: TMainForm
   end
   object ApplicationEvents1: TApplicationEvents
     OnMessage = ApplicationEvents1Message
-    Left = 104
-    Top = 4
+    Left = 8
+    Top = 308
   end
   object Timer1: TTimer
     Interval = 100
     OnTimer = Timer1Timer
-    Left = 132
-    Top = 4
+    Left = 180
+    Top = 308
   end
 end
