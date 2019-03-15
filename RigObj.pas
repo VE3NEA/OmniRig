@@ -140,15 +140,15 @@ var
   FmtValue: TByteArray;
   strval: string;
 begin
-  MainForm.Log('Generating Write command for %s', [RigCommands.ParamToStr(AParam)]);
+  MainForm.Log('RIG%d Generating Write command for %s', [RigNumber, RigCommands.ParamToStr(AParam)]);
   MainForm.Log('Generating Write command for %s', [IntToStr(AValue)]);
   //is cmd supported?
   if RigCommands = nil then Exit;
   Cmd := RigCommands.WriteCmd[AParam];
   if Cmd.Code = nil then
     begin
-    MainForm.Log('{!}Write command not supported for %s',
-      [RigCommands.ParamToStr(AParam)]);
+      MainForm.Log('RIG%d {!}Write command not supported for %s',
+      [RigNumber, RigCommands.ParamToStr(AParam)]);
     Exit;
     end;
 
@@ -685,6 +685,12 @@ begin
 
   PValue^ := Value;
   Include(ChangedParams, Param);
+
+  //unsolved problem:
+  //there is no command to read the mode of the other VFO,
+  //its change goes undetected.
+  if (Param in ModeParams) and (Param <> LastWrittenMode)
+    then LastWrittenMode := pmNone;
 
   MainForm.Log('RIG%d status changed: %s = %d',
     [RigNumber, RigCommands.ParamToStr(Param), Value]);

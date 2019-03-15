@@ -258,7 +258,9 @@ end;
 
 procedure TRigX.Set_Split(Value: RigParamX);
 begin
- FRig.Split := IntToParam(Value);
+  MainForm.Log('RIG%d Entering SetSplit', [FRig.RigNumber]);
+  FRig.Split := IntToParam(Value);
+  MainForm.Log('RIG%d Leaving SetSplit', [FRig.RigNumber]);
 end;
 
 procedure TRigX.Set_Rit(Value: RigParamX);
@@ -277,8 +279,59 @@ begin
 end;
 
 procedure TRigX.Set_Mode(Value: RigParamX);
+var
+  WrParams: TRigParamSet;
+  NewMode: TRigParam;
 begin
- FRig.Mode := IntToParam(Value);
+MainForm.Log('RIG%d Entering SetMode', [FRig.RigNumber]);
+
+  NewMode := IntToParam(Value);
+
+  if NewMode <> FRig.LastWrittenMode then
+    begin
+    FRig.LastWrittenMode := NewMode;
+    WrParams := FRig.RigCommands.WriteableParams;
+
+    //the best way to set mode for both VFO's
+    if pmVfoSwap in WrParams then
+      begin
+      FRig.ForceVfo(pmVfoSwap);
+      FRig.Mode := NewMode;
+      FRig.ForceVfo(pmVfoSwap);
+      FRig.Mode := NewMode;
+      end
+
+    //changes VFO selection as a side effect
+    else if pmVfoB in WrParams then
+      begin
+      FRig.ForceVfo(pmVfoB);
+      FRig.Mode := NewMode;
+      FRig.ForceVfo(pmVfoA);
+      FRig.Mode := NewMode;
+      end
+
+    //changes VFO selection as a side effect
+    else if pmVfoBB in WrParams then
+      begin
+      FRig.ForceVfo(pmVfoBB);
+      FRig.Mode := NewMode;
+      FRig.ForceVfo(pmVfoAA);
+      FRig.Mode := NewMode;
+      end
+
+    //changes the frequency of the other VFO as a side effect
+    else if pmVfoEqual in WrParams then
+      begin
+      FRig.Mode := NewMode;
+      FRig.ForceVfo(pmVfoEqual);
+      end
+    end
+
+    //for the radios without VFO selection
+    else
+      FRig.Mode := NewMode;
+
+  MainForm.Log('RIG%d Leaving SetMode', [FRig.RigNumber]);
 end;
 
 
@@ -301,53 +354,53 @@ var
 begin
   if FRig.RigCommands = nil then Exit;
 
+  MainForm.Log('RIG%d Entering SetSimplexMode', [FRig.RigNumber]);
+
   WrParams := FRig.RigCommands.WriteableParams;
 
   if ([pmFreqA,pmVfoAA] - WrParams) = [] then
     begin
+    FRig.ForceVfo(pmVfoAA);
     FRig.FreqA := Freq;
-    FRig.Vfo := pmVfoAA;
     end
   else if ([pmFreqA, pmVfoA, pmSplitOff] - WrParams) = [] then
     begin
+    FRig.ForceVfo(pmVfoA);
     FRig.FreqA := Freq;
-    FRig.Vfo := pmVfoA;
     end
   else if ([pmFreq, pmVfoA, pmVfoB] - WrParams) = [] then
     begin
-    FRig.Vfo := pmVfoB;
+    FRig.ForceVfo(pmVfoB);
     FRig.Freq := Freq;
-    FRig.Vfo := pmVfoA;
+    FRig.ForceVfo(pmVfoA);
     FRig.Freq := Freq;
     end
   else if ([pmFreq, pmVfoEqual] - WrParams) = [] then
     begin
     FRig.Freq := Freq;
-    FRig.Vfo := pmVfoEqual;
+    FRig.ForceVfo(pmVfoEqual);
     end
   else if ([pmFreq, pmVfoSwap] - WrParams) = [] then
     begin
-    FRig.Vfo := pmVfoSwap;
+    FRig.ForceVfo(pmVfoSwap);
     FRig.Freq := Freq;
-    FRig.Vfo := pmVfoSwap;
+    FRig.ForceVfo(pmVfoSwap);
     FRig.Freq := Freq;
     end
-// Added by RA6UAZ for Icom Marine Radio NMEA Command
+  // Added by RA6UAZ for Icom Marine Radio NMEA Command
   else if ([pmFreq, pmFreqA, pmFreqB] - WrParams) = [pmFreqA] then
     begin
     FRig.Freq := Freq;
     FRig.FreqB := Freq;
     end
-else if ([pmFreq{,pmSplitOff}] - WrParams) = [] then
+  else if ([pmFreq] - WrParams) = [] then
     begin
     FRig.Freq := Freq;
-    end
-
-  else Exit;
-
-  FRig.Split := pmSplitOff;
+    end;
+  if pmSplitOff in WrParams then FRig.Split := pmSplitOff;
   FRig.Rit := pmRitOff;
   FRig.Xit := pmXitOff;
+  MainForm.Log('RIG%d Leaving SetSimplexMode', [FRig.RigNumber]);
 end;
 
 
@@ -358,54 +411,59 @@ var
 begin
   if FRig.RigCommands = nil then Exit;
 
+  MainForm.Log('RIG%d Leaving SetSimplexMode', [FRig.RigNumber]);
+
   WrParams := FRig.RigCommands.WriteableParams;
 
+  //set rx and tx frequencies and split
   if ([pmFreqA,pmFreqB,pmVfoAB] - WrParams) = [] then
     begin //TS-570
+    FRig.ForceVfo(pmVfoAB);
     FRig.FreqA := RxFreq;
     FRig.FreqB := TxFreq;
-    FRig.Vfo := pmVfoAB;
     end
-  else if ([pmFreq,pmVfoEqual{,pmSplitOn}] - WrParams) = [] then
+  else if ([pmFreq,pmVfoEqual] - WrParams) = [] then
     begin //IC-746
     FRig.Freq := TxFreq;
-    FRig.Vfo := pmVfoEqual;
+    FRig.ForceVfo(pmVfoEqual);
     FRig.Freq := RxFreq;
     FRig.Split := pmSplitOn;
     end
-  else if ([pmVfoB,pmFreq,pmVfoA{,pmSplitOn}] - WrParams) = [] then
+  else if ([pmVfoB,pmFreq,pmVfoA] - WrParams) = [] then
     begin //FT-100D
-    FRig.Vfo := pmVfoB;
+    FRig.ForceVfo(pmVfoB);
     FRig.Freq := TxFreq;
-    FRig.Vfo := pmVfoA;
+    FRig.ForceVfo(pmVfoA);
     FRig.Freq := RxFreq;
     FRig.Split := pmSplitOn;
     end
-  else if ([pmFreq,pmVfoSwap{,pmSplitOn}] - WrParams) = [] then
+  else if ([pmFreq,pmVfoSwap] - WrParams) = [] then
     begin //Ft-817 ?
-    FRig.Vfo := pmVfoSwap;
+    FRig.ForceVfo(pmVfoSwap);
     FRig.Freq := TxFreq;
-    FRig.Vfo := pmVfoSwap;
+    FRig.ForceVfo(pmVfoSwap);
     FRig.Freq := RxFreq;
     FRig.Split := pmSplitOn;
     end
-  else if ([pmFreqA,pmFreqB,pmVfoA{, pmSplitOn}] - WrParams) = [] then
+  else if ([pmFreqA,pmFreqB,pmVfoA] - WrParams) = [] then
     begin //FT-1000 MP
+    FRig.ForceVfo(pmVfoA);
     FRig.FreqA := RxFreq;
     FRig.FreqB := TxFreq;
-    FRig.Vfo := pmVfoA;
-    FRig.Split := pmSplitOn;
     end
-// Added by RA6UAZ for Icom Marine Radio NMEA Command
+  // Added by RA6UAZ for Icom Marine Radio NMEA Command
   else if ([pmFreq, pmFreqA, pmFreqB] - WrParams) = [pmFreqA] then
     begin
     FRig.Freq := RxFreq;
     FRig.FreqB := TxFreq;
-    end
-  else Exit;
+  end;
+
+  if pmSplitOn in WrParams then FRig.Split := pmSplitOn;
 
   FRig.Rit := pmRitOff;
   FRig.Xit := pmXitOff;
+
+  MainForm.Log('RIG%d Leaving SetSplitMode', [FRig.RigNumber]);
 end;
 
 
@@ -475,6 +533,8 @@ var
 begin
   if FRig.RigCommands = nil then Exit;
 
+  MainForm.Log('RIG%d Entering GetRxFrequency', [FRig.RigNumber]);
+
   RdParams := FRig.RigCommands.ReadableParams;
 
   FRig.Lock;
@@ -492,6 +552,8 @@ begin
   finally
     FRig.Unlock;
   end;
+
+  MainForm.Log('RIG%d Leaving GetRxFrequency', [FRig.RigNumber]);
 end;
 
 
@@ -500,6 +562,8 @@ var
   RdParams: TRigParamSet;
 begin
   if FRig.RigCommands = nil then Exit;
+
+  MainForm.Log('RIG%d Entering GetTxFrequency', [FRig.RigNumber]);
 
   RdParams := FRig.RigCommands.ReadableParams;
 
@@ -518,6 +582,8 @@ begin
   finally
     FRig.Unlock;
   end;
+
+  MainForm.Log('RIG%d Leaving GetTxFrequency', [FRig.RigNumber]);
 end;
 
 
