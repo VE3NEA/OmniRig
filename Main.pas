@@ -103,6 +103,7 @@ type
     Rig2: TRig;
     Sett1: TRigSettings;
     Sett2: TRigSettings;
+    SetBothModes: boolean;
 
 
     procedure ForceForeground;
@@ -331,6 +332,7 @@ begin
     Log('RIG 1 settings: ' + Sett1.Text);
     Sett2.FromIni(Ini, 'RIG2');
     Log('RIG 2 settings: ' + Sett2.Text);
+    SetBothModes := Ini.ReadBool('General', 'SetBothModes', false);
   finally
     Ini.Free;
   end;

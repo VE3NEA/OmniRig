@@ -22,6 +22,8 @@ uses
 
 type
   TRigX = class(TAutoObject, IRigX)
+  private
+    procedure SetBothModes(Value: RigParamX);
   protected
     function  Get_RigType: WideString; safecall;
     function  Get_ReadableParams: Integer; safecall;
@@ -281,9 +283,20 @@ end;
 
 procedure TRigX.Set_Mode(Value: RigParamX);
 var
+  NewMode: TRigParam;
+begin
+  NewMode := IntToParam(Value);
+  if MainForm.SetBothModes
+    then SetBothModes(Value)
+    else FRig.Mode := IntToParam(Value);
+end;
+
+procedure TRigX.SetBothModes(Value: RigParamX);
+var
   WrParams: TRigParamSet;
   NewMode: TRigParam;
 begin
+
   MainForm.Log('RIG%d Entering SetMode', [FRig.RigNumber]);
 
   NewMode := IntToParam(Value);
@@ -326,11 +339,11 @@ begin
       FRig.Mode := NewMode;
       FRig.ForceVfo(pmVfoEqual);
       end
-    end
 
     //for the radios without VFO selection
     else
       FRig.Mode := NewMode;
+    end;
 
   MainForm.Log('RIG%d Leaving SetMode', [FRig.RigNumber]);
 end;
@@ -446,7 +459,7 @@ begin
     FRig.Freq := RxFreq;
     end
   else if ([pmFreqA,pmFreqB,pmVfoA] - WrParams) = [] then
-    begin //FT-1000 MP
+    begin //FT-1000 MP, IC-7610
     FRig.ForceVfo(pmVfoA);
     FRig.FreqA := RxFreq;
     FRig.FreqB := TxFreq;

@@ -162,7 +162,7 @@ begin
   //add to queue
   Lock;
   try
-    with FQueue.Add do
+    with FQueue.AddBeforeStatusCommands do
       begin
       Code := Copy(NewCode);
       Param := AParam;
