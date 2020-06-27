@@ -316,12 +316,12 @@ var
   F: single;
   C: Char;
 begin
-  C := DecimalSeparator;
-  DecimalSeparator := '.';
+  C := {$IFNDEF VER210}FormatSettings.{$ENDIF}DecimalSeparator;
+  {$IFNDEF VER210}FormatSettings.{$ENDIF}DecimalSeparator := '.';
   F := Value / 1000000;
   S := StringOfChar('0', Length(Arr)) + FloatToStrF(F,ffFixed,10,6);
   Move(S[Length(S)-Length(Arr)+1], Arr[0], Length(Arr));
-  DecimalSeparator := C;
+  {$IFNDEF VER210}FormatSettings.{$ENDIF}DecimalSeparator := C;
 end;
 
 
@@ -454,7 +454,7 @@ var
   i: integer;
 begin
   try
-    DecimalSeparator := '.';
+    {$IFNDEF VER210}FormatSettings.{$ENDIF}DecimalSeparator := '.';
     SetLength(S, Length(AData));
     Move(Adata[0], S[1], Length(S));
     for i:=1 to Length(S) do

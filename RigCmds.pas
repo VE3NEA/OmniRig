@@ -294,7 +294,7 @@ end;
 //Value=5|5|vfBcdL|1|0[|pmXXX]
 function TRigCommands.LoadValue: TParamValue;
 begin
-  DecimalSeparator := '.';
+  {$IFNDEF VER210}FormatSettings.{$ENDIF}DecimalSeparator := '.';
   FillChar(Result, SizeOf(Result), 0);
   FList.DelimText := FIni.ReadString(FSection, FEntry, '');
 
