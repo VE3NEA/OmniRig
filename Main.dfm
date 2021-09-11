@@ -443,7 +443,7 @@ object MainForm: TMainForm
         Top = 156
         Width = 110
         Height = 13
-        Caption = 'Copyright '#169' 2003-2018'
+        Caption = 'Copyright '#169' 2003-2021'
       end
       object Label17: TLabel
         Left = 26
