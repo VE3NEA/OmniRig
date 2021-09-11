@@ -539,7 +539,9 @@ end;
 
 procedure TCustomRig.SetFreqA(const Value: integer);
 begin
+  MainForm.Log('Entered SetFreqA');
   if Enabled and (Value <> FFreqA) then AddWriteCommand(pmFreqA, Value);
+  MainForm.Log('Exiting SetFreqA');
 end;
 
 

@@ -55,6 +55,8 @@ type
     procedure StoreParam(Param: TRigParam); overload;
     procedure StoreParam(Param: TRigParam; Value: integer); overload;
     procedure ToTextUD(Arr: TByteArray; Value: integer);
+    procedure ToFloat(Arr: TByteArray; Value: integer);
+    function FromFloat(AData: TByteArray): integer;
   protected
     ChangedParams: TRigParamSet;
 
@@ -286,9 +288,9 @@ begin
     vfBcdBU: ToBcdBU(Result, Value);
     vfBcdBS: ToBcdBS(Result, Value);
     vfYaesu: ToYaesu(Result, Value);
-// Added by RA6UAZ for Icom Marine Radio NMEA Command
     vfDPIcom: ToDPIcom(Result, Value);
     vfTextUD: ToTextUD(Result, Value);
+    vfFloat: ToFloat(Result, Value);
     end;
 end;
 
@@ -314,14 +316,11 @@ procedure TRig.ToDPIcom(Arr: TByteArray; Value: integer);
 var
   S: AnsiString;
   F: single;
-  C: Char;
 begin
-  C := {$IFNDEF VER210}FormatSettings.{$ENDIF}DecimalSeparator;
-  {$IFNDEF VER210}FormatSettings.{$ENDIF}DecimalSeparator := '.';
+  {$IFNDEF VER200}FormatSettings.{$ENDIF}  DecimalSeparator := '.';
   F := Value / 1000000;
   S := StringOfChar('0', Length(Arr)) + FloatToStrF(F,ffFixed,10,6);
   Move(S[Length(S)-Length(Arr)+1], Arr[0], Length(Arr));
-  {$IFNDEF VER210}FormatSettings.{$ENDIF}DecimalSeparator := C;
 end;
 
 
@@ -395,6 +394,15 @@ begin
   if Value < 0 then Arr[0] := Arr[0] or $80;
 end;
 
+procedure TRig.ToFloat(Arr: TByteArray; Value: integer);
+var
+  S: AnsiString;
+begin
+  {$IFNDEF VER200}FormatSettings.{$ENDIF}  DecimalSeparator := '.';
+  S := Format('%.2f', [Length(Arr), Value]);
+  Move(S[1], Arr[0], Length(Arr));
+end;
+
 
 
 
@@ -420,8 +428,8 @@ begin
     vfBcdLS: Result := FromBcdLS(AData);
     vfBcdBU: Result := FromBcdBU(AData);
     vfBcdBS: Result := FromBcdBS(AData);
-// Added by RA6UAZ for Icom Marine Radio NMEA Command
     vfDPIcom: Result := FromDPIcom(AData);
+    vfFloat: Result := FromFloat(AData);
     else{vfYaesu:} Result := FromYaesu(AData);
     end;
 
@@ -448,19 +456,16 @@ end;
 function TRig.FromDPIcom(AData: TByteArray): integer;
 var
   S: AnsiString;
-  F: single;
-  D: Double;
-  C: Char;
   i: integer;
 begin
   try
-    {$IFNDEF VER210}FormatSettings.{$ENDIF}DecimalSeparator := '.';
+    {$IFNDEF VER200}FormatSettings.{$ENDIF}DecimalSeparator := '.';
     SetLength(S, Length(AData));
     Move(Adata[0], S[1], Length(S));
     for i:=1 to Length(S) do
-      if not (S[i] in ['0'..'9','.']) then
+      if not (S[i] in ['0'..'9','.', ' ']) then
         begin SetLength(S, i-1); Break; end;
-    Result := Round(1E6 * StrToFloat(S));
+    Result := Round(1E6 * StrToFloat(Trim(S)));
   except
     MainForm.Log('RIG%d: {!}invalid reply', [RigNumber]);
     raise;
@@ -538,6 +543,22 @@ begin
   if (AData[0] and $80) = 0 then Result := 1 else Result := -1;
   AData[0] := AData[0] and $7F;
   Result := Result * FromBinB(AData);
+end;
+
+
+function TRig.FromFloat(AData: TByteArray): integer;
+var
+  S: AnsiString;
+begin
+  try
+    SetLength(S, Length(AData));
+    Move(Adata[0], S[1], Length(S));
+    {$IFNDEF VER200}FormatSettings.{$ENDIF}    DecimalSeparator := '.';
+    Result := Round(StrToFloat(Trim(S)));
+  except
+    MainForm.Log('RIG%d: {!}invalid reply', [RigNumber]);
+    raise;
+  end;
 end;
 
 

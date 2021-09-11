@@ -581,10 +581,18 @@ begin
 
   FRig.Lock;
   try
-    if (pmFreqA in RdParams) and (FRig.Vfo in [pmVfoAA, pmVfoBA])
+    if (FRig.Vfo in [pmVfoAA, pmVfoBA]) and (pmFreqA in RdParams)
       then Result := FRig.FreqA
-    else if (pmFreqB in RdParams) and (FRig.Vfo in [pmVfoAB, pmVfoBB])
+    else if (FRig.Vfo in [pmVfoAB, pmVfoBB]) and (pmFreqB in RdParams)
       then Result := FRig.FreqB
+    else if (FRig.Vfo = pmVfoA) and (FRig.Split = pmSplitOff)
+      then Result := FRig.FreqA
+    else if (FRig.Vfo = pmVfoA) and (FRig.Split = pmSplitOn)
+      then Result := FRig.FreqB
+    else if (FRig.Vfo = pmVfoB) and (FRig.Split = pmSplitOff)
+      then Result := FRig.FreqB
+    else if (FRig.Vfo = pmVfoB) and (FRig.Split = pmSplitOn)
+      then Result := FRig.FreqA
     else if FRig.Tx = pmTx
       then Result := FRig.Freq
     else Result := 0;
@@ -595,7 +603,7 @@ begin
     FRig.Unlock;
   end;
 
-  MainForm.Log('RIG%d Leaving GetTxFrequency', [FRig.RigNumber]);
+  MainForm.Log('RIG%d Leaving GetTxFrequency %d', [FRig.RigNumber, Result]);
 end;
 
 
