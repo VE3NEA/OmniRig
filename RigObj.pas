@@ -60,7 +60,8 @@ type
     procedure StoreParam(Param: TRigParam); overload;
     procedure StoreParam(Param: TRigParam; Value: Int64); overload;
     procedure ToTextUD(Arr: TByteArray; Value: Int64);
-
+    procedure ToFloat(Arr: TByteArray; Value: Int64);
+    function FromFloat(AData: TByteArray): Int64;
   protected
     ChangedParams: TRigParamSet;
 
@@ -141,13 +142,12 @@ var
   strval: string;
 begin
   MainForm.Log('RIG%d Generating Write command for %s', [RigNumber, RigCommands.ParamToStr(AParam)]);
-  MainForm.Log('Generating Write command for %s', [IntToStr(AValue)]);
   //is cmd supported?
   if RigCommands = nil then Exit;
   Cmd := RigCommands.WriteCmd[AParam];
   if Cmd.Code = nil then
     begin
-      MainForm.Log('RIG%d {!}Write command not supported for %s',
+    MainForm.Log('RIG%d {!}Write command not supported for %s',
       [RigNumber, RigCommands.ParamToStr(AParam)]);
     Exit;
     end;
@@ -162,14 +162,14 @@ begin
         raise Exception.Create('{!}Value too long');
       Move(FmtValue[0], NewCode[Cmd.Value.Start], Cmd.Value.Len);
     except on E: Exception do
-      begin MainForm.Log('{!}Generating command: %s', [E.Message]); end;
+      begin MainForm.Log('RIG% {!}Generating command: %s', [RigNumber, E.Message]); end;
     end;
 
 
   //add to queue
   Lock;
   try
-    with FQueue.Add do
+    with FQueue.AddBeforeStatusCommands do
       begin
       Code := Copy(NewCode);
       Param := AParam;
@@ -307,9 +307,9 @@ begin
     vfBcdBU: ToBcdBU(Result, Value2);
     vfBcdBS: ToBcdBS(Result, Value2);
     vfYaesu: ToYaesu(Result, Value2);
-// Added by RA6UAZ for Icom Marine Radio NMEA Command
     vfDPIcom: ToDPIcom(Result, Value2);
     vfTextUD: ToTextUD(Result, Value2);
+    vfFloat: ToFloat(Result, Value2);
     end;
 end;
 
@@ -363,14 +363,11 @@ procedure TRig.ToDPIcom(Arr: TByteArray; Value: Int64);
 var
   S: AnsiString;
   F: single;
-  C: Char;
 begin
-  C := FormatSettings.DecimalSeparator;
-  FormatSettings.DecimalSeparator := '.';
+  {$IFNDEF VER200}FormatSettings.{$ENDIF}  DecimalSeparator := '.';
   F := Value / 1000000;
   S := StringOfChar('0', Length(Arr)) + FloatToStrF(F,ffFixed,10,6);
   Move(S[Length(S)-Length(Arr)+1], Arr[0], Length(Arr));
-  FormatSettings.DecimalSeparator := C;
 end;
 
 
@@ -444,6 +441,15 @@ begin
   if Value < 0 then Arr[0] := Arr[0] or $80;
 end;
 
+procedure TRig.ToFloat(Arr: TByteArray; Value: integer);
+var
+  S: AnsiString;
+begin
+  {$IFNDEF VER200}FormatSettings.{$ENDIF}  DecimalSeparator := '.';
+  S := Format('%.2f', [Length(Arr), Value]);
+  Move(S[1], Arr[0], Length(Arr));
+end;
+
 
 
 
@@ -472,8 +478,8 @@ begin
     vfBcdLS: Result := FromBcdLS(AData);
     vfBcdBU: Result := FromBcdBU(AData);
     vfBcdBS: Result := FromBcdBS(AData);
-// Added by RA6UAZ for Icom Marine Radio NMEA Command
     vfDPIcom: Result := FromDPIcom(AData);
+    vfFloat: Result := FromFloat(AData);
     else{vfYaesu:} Result := FromYaesu(AData);
     end;
 
@@ -546,19 +552,16 @@ end;
 function TRig.FromDPIcom(AData: TByteArray): Int64;
 var
   S: AnsiString;
-  F: single;
-  D: Double;
-  C: Char;
   i: integer;
 begin
   try
-    FormatSettings.DecimalSeparator := '.';
+    {$IFNDEF VER200}FormatSettings.{$ENDIF}DecimalSeparator := '.';
     SetLength(S, Length(AData));
     Move(Adata[0], S[1], Length(S));
     for i:=1 to Length(S) do
-      if not (S[i] in ['0'..'9','.']) then
+      if not (S[i] in ['0'..'9','.', ' ']) then
         begin SetLength(S, i-1); Break; end;
-    Result := Round(1E6 * StrToFloat(S));
+    Result := Round(1E6 * StrToFloat(Trim(S)));
   except
     MainForm.Log('RIG%d: {!}invalid reply', [RigNumber]);
     raise;
@@ -639,6 +642,22 @@ begin
 end;
 
 
+function TRig.FromFloat(AData: TByteArray): integer;
+var
+  S: AnsiString;
+begin
+  try
+    SetLength(S, Length(AData));
+    Move(Adata[0], S[1], Length(S));
+    {$IFNDEF VER200}FormatSettings.{$ENDIF}    DecimalSeparator := '.';
+    Result := Round(StrToFloat(Trim(S)));
+  except
+    MainForm.Log('RIG%d: {!}invalid reply', [RigNumber]);
+    raise;
+  end;
+end;
+
+
 
 
 
@@ -662,6 +681,12 @@ begin
 
   PParam^ := Param;
   Include(ChangedParams, Param);
+
+  //unsolved problem:
+  //there is no command to read the mode of the other VFO,
+  //its change goes undetected.
+  if (Param in ModeParams) and (Param <> LastWrittenMode)
+    then LastWrittenMode := pmNone;
 
   MainForm.Log('RIG%d status changed: %s enabled',
     [RigNumber, RigCommands.ParamToStr(Param)]);

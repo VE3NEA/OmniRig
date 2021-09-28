@@ -246,12 +246,11 @@ begin
     Unlock;
   end;
 
-  CheckQueue;
   if ComPort.Open
     then CheckQueue
     else MainForm.Log('RIG%d {!} Unable to open port', [RigNumber]);
 
-  //    else Timer.Enabled := true;
+//    else Timer.Enabled := true;
 end;
 
 
@@ -539,7 +538,9 @@ end;
 
 procedure TCustomRig.SetFreqA(const Value: Int64);
 begin
+  MainForm.Log('Entered SetFreqA');
   if Enabled and (Value <> FFreqA) then AddWriteCommand(pmFreqA, Value);
+  MainForm.Log('Exiting SetFreqA');
 end;
 
 
@@ -604,6 +605,7 @@ procedure TCustomRig.ForceVfo(const Value: TRigParam);
 begin
   if Enabled then AddWriteCommand(Value);
 end;
+
 
 procedure TCustomRig.SetXit(const Value: TRigParam);
 begin
