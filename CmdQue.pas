@@ -48,6 +48,7 @@ type
 
     constructor Create;
     function Add: TQueueItem;
+    function AddBeforeStatusCommands: TQueueItem;
     function HasStatusCommands: boolean;
 
     function CurrentCmd: TQueueItem;
@@ -90,6 +91,19 @@ function TCommandQueue.Add: TQueueItem;
 begin
   Result := TQueueItem(inherited Add);
 end;
+
+function TCommandQueue.AddBeforeStatusCommands: TQueueItem;
+var
+  i, Idx: integer;
+begin
+  Idx := Count;
+  //Items[0] is being worked on, start with [1]
+  for i:=1 to Count-1 do if Items[i].Kind = ckStatus
+    then begin Idx := i; Break; end;
+
+  Result := TQueueItem(Insert(Idx));
+end;
+
 
 
 function TCommandQueue.HasStatusCommands: boolean;

@@ -53,9 +53,9 @@ type
     vfBcdBU,  //big endian
     vfBcdBS,  //big endian
     vfYaesu,  //format invented by Yaesu
-// Added by RA6UAZ for Icom Marine Radio NMEA Command
-    vfDPIcom,  //format Decimal point by Icom
-    vfTextUD); //Yaesu: text, but sign is U for + and D for -
+    vfDPIcom, //format Decimal point by Icom Marine Radio
+    vfTextUD, //Yaesu: text, but sign is U for + and D for -
+    vfFloat); //string with leading spaces and decimal point
 
 
   TParamValue = record
@@ -294,7 +294,7 @@ end;
 //Value=5|5|vfBcdL|1|0[|pmXXX]
 function TRigCommands.LoadValue: TParamValue;
 begin
-  FormatSettings.DecimalSeparator := '.';
+  {$IFNDEF VER200}FormatSettings.{$ENDIF}DecimalSeparator := '.';
   FillChar(Result, SizeOf(Result), 0);
   FList.DelimText := FIni.ReadString(FSection, FEntry, '');
 
