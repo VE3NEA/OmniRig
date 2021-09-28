@@ -441,7 +441,7 @@ begin
   if Value < 0 then Arr[0] := Arr[0] or $80;
 end;
 
-procedure TRig.ToFloat(Arr: TByteArray; Value: integer);
+procedure TRig.ToFloat(Arr: TByteArray; Value: Int64);
 var
   S: AnsiString;
 begin
@@ -642,7 +642,7 @@ begin
 end;
 
 
-function TRig.FromFloat(AData: TByteArray): integer;
+function TRig.FromFloat(AData: TByteArray): Int64;
 var
   S: AnsiString;
 begin
