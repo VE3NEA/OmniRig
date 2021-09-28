@@ -58,11 +58,11 @@ procedure ComNotifyVisible;
 procedure ComNotifyRigType(RigNumber: integer);
 //send message to fire com event later
 procedure ComNotifyStatus(RigNumber: integer);
-procedure ComNotifyParams(RigNumber: integer; Params: integer);
+procedure ComNotifyParams(RigNumber: integer; Params: Int64);
 procedure ComNotifyCustom(RigNumber: integer; Sender: Pointer);
 //fire event in response to message
 procedure DoComNotifyStatus(RigNumber: integer);
-procedure DoComNotifyParams(RigNumber, Params: integer);
+procedure DoComNotifyParams(RigNumber: integer; Params: Int64);
 procedure DoComNotifyCustom(RigNumber: integer; Sender: Pointer);
 
 
@@ -223,7 +223,7 @@ begin
 end;
 
 
-procedure ComNotifyParams(RigNumber, Params: integer);
+procedure ComNotifyParams(RigNumber: integer; Params: Int64);
 begin
   PostMessage(MainForm.Handle, WM_COMPARAMS, RigNumber, Params);
 end;
@@ -247,7 +247,7 @@ begin
 end;
 
 
-procedure DoComNotifyParams(RigNumber, Params: integer);
+procedure DoComNotifyParams(RigNumber: integer; Params: Int64);
 var
   i: integer;
 begin

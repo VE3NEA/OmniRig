@@ -2,9 +2,9 @@ object MainForm: TMainForm
   Left = 237
   Top = 116
   BorderStyle = bsDialog
-  Caption = 'Omni-Rig Settings'
-  ClientHeight = 355
-  ClientWidth = 411
+  Caption = 'Omni-Rig 64 Settings'
+  ClientHeight = 693
+  ClientWidth = 438
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -46,19 +46,27 @@ object MainForm: TMainForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object Label20: TLabel
+    Left = 40
+    Top = 320
+    Width = 49
+    Height = 13
+    Caption = 'LO Values'
+  end
   object Panel1: TPanel
     Left = 0
-    Top = 322
-    Width = 411
+    Top = 660
+    Width = 438
     Height = 33
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
+    ExplicitTop = 686
     DesignSize = (
-      411
+      438
       33)
     object OkBtn: TButton
-      Left = 249
+      Left = 276
       Top = 5
       Width = 75
       Height = 25
@@ -70,7 +78,7 @@ object MainForm: TMainForm
       OnClick = OkBtnClick
     end
     object CancelBtn: TButton
-      Left = 329
+      Left = 356
       Top = 5
       Width = 75
       Height = 25
@@ -85,9 +93,11 @@ object MainForm: TMainForm
   object TabControl1: TTabControl
     Left = 0
     Top = 0
-    Width = 411
-    Height = 322
-    Align = alClient
+    Width = 530
+    Height = 660
+    Align = alLeft
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    DockSite = True
     TabOrder = 1
     Tabs.Strings = (
       'RIG 1'
@@ -96,14 +106,16 @@ object MainForm: TMainForm
     TabIndex = 0
     OnChange = TabControl1Change
     OnChanging = TabControl1Changing
+    ExplicitHeight = 686
     object Panel2: TPanel
       Left = 4
       Top = 24
       Width = 206
-      Height = 294
+      Height = 632
       Align = alLeft
       BevelOuter = bvNone
       TabOrder = 0
+      ExplicitHeight = 633
       object Label1: TLabel
         Left = 14
         Top = 43
@@ -181,6 +193,108 @@ object MainForm: TMainForm
         Height = 13
         Caption = 'DTR'
         FocusControl = DtrComboBox
+      end
+      object Label19: TLabel
+        Left = 14
+        Top = 329
+        Width = 37
+        Height = 13
+        Caption = '50 MHz'
+        FocusControl = RigComboBox
+      end
+      object Label21: TLabel
+        Left = 46
+        Top = 303
+        Width = 123
+        Height = 20
+        Caption = 'LO Values (Hz)'
+        FocusControl = RigComboBox
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label22: TLabel
+        Left = 14
+        Top = 356
+        Width = 43
+        Height = 13
+        Caption = '144 MHz'
+        FocusControl = RigComboBox
+      end
+      object Label23: TLabel
+        Left = 14
+        Top = 380
+        Width = 43
+        Height = 13
+        Caption = '222 MHz'
+        FocusControl = RigComboBox
+      end
+      object Label24: TLabel
+        Left = 14
+        Top = 407
+        Width = 43
+        Height = 13
+        Caption = '432 MHz'
+        FocusControl = RigComboBox
+      end
+      object Label25: TLabel
+        Left = 14
+        Top = 434
+        Width = 43
+        Height = 13
+        Caption = '903 MHz'
+        FocusControl = RigComboBox
+      end
+      object Label26: TLabel
+        Left = 14
+        Top = 464
+        Width = 49
+        Height = 13
+        Caption = '1296 MHz'
+        FocusControl = RigComboBox
+      end
+      object Label27: TLabel
+        Left = 14
+        Top = 491
+        Width = 30
+        Height = 13
+        Caption = '2 GHz'
+        FocusControl = RigComboBox
+      end
+      object Label28: TLabel
+        Left = 14
+        Top = 518
+        Width = 30
+        Height = 13
+        Caption = '3 GHz'
+        FocusControl = RigComboBox
+      end
+      object Label29: TLabel
+        Left = 14
+        Top = 548
+        Width = 30
+        Height = 13
+        Caption = '5 GHz'
+        FocusControl = RigComboBox
+      end
+      object Label30: TLabel
+        Left = 14
+        Top = 573
+        Width = 36
+        Height = 13
+        Caption = '10 GHz'
+        FocusControl = RigComboBox
+      end
+      object Label31: TLabel
+        Left = 14
+        Top = 599
+        Width = 36
+        Height = 13
+        Caption = '24 GHz'
+        FocusControl = RigComboBox
       end
       object PortComboBox: TComboBox
         Left = 82
@@ -318,19 +432,99 @@ object MainForm: TMainForm
           'Low'
           'High')
       end
+      object Box144: TEdit
+        Left = 79
+        Top = 353
+        Width = 106
+        Height = 21
+        TabOrder = 10
+      end
+      object Box222: TEdit
+        Left = 79
+        Top = 380
+        Width = 106
+        Height = 21
+        TabOrder = 11
+      end
+      object Box432: TEdit
+        Left = 79
+        Top = 407
+        Width = 106
+        Height = 21
+        TabOrder = 12
+      end
+      object Box903: TEdit
+        Left = 79
+        Top = 434
+        Width = 106
+        Height = 21
+        TabOrder = 13
+      end
+      object Box1296: TEdit
+        Left = 79
+        Top = 461
+        Width = 106
+        Height = 21
+        TabOrder = 14
+      end
+      object Box2G: TEdit
+        Left = 79
+        Top = 488
+        Width = 106
+        Height = 21
+        TabOrder = 15
+      end
+      object Box3G: TEdit
+        Left = 79
+        Top = 515
+        Width = 106
+        Height = 21
+        TabOrder = 16
+      end
+      object Box5G: TEdit
+        Left = 79
+        Top = 545
+        Width = 106
+        Height = 21
+        TabOrder = 17
+      end
+      object Box10G: TEdit
+        Left = 79
+        Top = 572
+        Width = 106
+        Height = 21
+        TabOrder = 18
+      end
+      object Box24G: TEdit
+        Left = 79
+        Top = 599
+        Width = 106
+        Height = 21
+        TabOrder = 19
+      end
+      object Box50: TEdit
+        Left = 79
+        Top = 326
+        Width = 106
+        Height = 21
+        TabOrder = 20
+      end
     end
     object Panel3: TPanel
       Left = 210
       Top = 24
-      Width = 197
-      Height = 294
+      Width = 316
+      Height = 632
       Align = alClient
       BevelOuter = bvLowered
+      UseDockManager = False
+      DockSite = True
       TabOrder = 1
       Visible = False
+      ExplicitHeight = 658
       DesignSize = (
-        197
-        294)
+        316
+        632)
       object Label8: TLabel
         Left = 69
         Top = 31
@@ -424,7 +618,7 @@ object MainForm: TMainForm
       end
       object Label15: TLabel
         Left = 8
-        Top = 272
+        Top = 610
         Width = 184
         Height = 13
         Cursor = crHandPoint
@@ -437,6 +631,7 @@ object MainForm: TMainForm
         Font.Style = [fsUnderline]
         ParentFont = False
         OnClick = Label15Click
+        ExplicitTop = 272
       end
       object Label16: TLabel
         Left = 41
@@ -447,7 +642,7 @@ object MainForm: TMainForm
       end
       object Label17: TLabel
         Left = 26
-        Top = 209
+        Top = 547
         Width = 144
         Height = 13
         Cursor = crHandPoint
@@ -460,6 +655,7 @@ object MainForm: TMainForm
         Font.Style = [fsUnderline]
         ParentFont = False
         OnClick = Label17Click
+        ExplicitTop = 209
       end
       object Label18: TLabel
         Left = 32
@@ -467,6 +663,168 @@ object MainForm: TMainForm
         Width = 132
         Height = 13
         Caption = 'Alex Shovkoplyas, VE3NEA'
+      end
+      object Label32: TLabel
+        Left = 30
+        Top = 210
+        Width = 146
+        Height = 13
+        Caption = 'LO offsets and 64 bit by W3SZ'
+        FocusControl = RigComboBox
+      end
+      object Label33: TLabel
+        Left = 63
+        Top = 229
+        Width = 68
+        Height = 20
+        Caption = 'RF to IF'
+        FocusControl = RigComboBox
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label35: TLabel
+        Left = 6
+        Top = 282
+        Width = 24
+        Height = 20
+        Caption = 'LO'
+        FocusControl = RigComboBox
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label36: TLabel
+        Left = 6
+        Top = 308
+        Width = 18
+        Height = 20
+        Caption = 'IF'
+        FocusControl = RigComboBox
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label37: TLabel
+        Left = 56
+        Top = 351
+        Width = 68
+        Height = 20
+        Caption = 'IF to RF'
+        FocusControl = RigComboBox
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label38: TLabel
+        Left = 6
+        Top = 378
+        Width = 25
+        Height = 20
+        Caption = 'RF'
+        FocusControl = RigComboBox
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label39: TLabel
+        Left = 6
+        Top = 404
+        Width = 24
+        Height = 20
+        Caption = 'LO'
+        FocusControl = RigComboBox
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label40: TLabel
+        Left = 6
+        Top = 430
+        Width = 18
+        Height = 20
+        Caption = 'IF'
+        FocusControl = RigComboBox
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object Label41: TLabel
+        Left = 6
+        Top = 256
+        Width = 25
+        Height = 20
+        Caption = 'RF'
+        FocusControl = RigComboBox
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -16
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        ParentFont = False
+      end
+      object RF2IF_LO: TEdit
+        Left = 36
+        Top = 282
+        Width = 121
+        Height = 21
+        TabOrder = 0
+      end
+      object RF2IF_IF: TEdit
+        Left = 36
+        Top = 309
+        Width = 121
+        Height = 21
+        TabOrder = 1
+      end
+      object IF2RF_RF: TEdit
+        Left = 37
+        Top = 377
+        Width = 121
+        Height = 21
+        TabOrder = 2
+      end
+      object IF2RF_LO: TEdit
+        Left = 37
+        Top = 404
+        Width = 121
+        Height = 21
+        TabOrder = 3
+      end
+      object IF2RF_IF: TEdit
+        Left = 36
+        Top = 431
+        Width = 121
+        Height = 21
+        TabOrder = 4
+      end
+      object RF2IF_RF: TEdit
+        Left = 37
+        Top = 255
+        Width = 121
+        Height = 21
+        TabOrder = 5
       end
     end
   end

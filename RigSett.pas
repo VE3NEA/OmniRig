@@ -32,6 +32,18 @@ type
     PollMs,
     TimeoutMs: integer;
 
+    offset50,
+    offset144,
+    offset222,
+    offset432,
+    offset903,
+    offset1296,
+    offset2G,
+    offset3G,
+    offset5G,
+    offset10G,
+    offset24G : Int64;
+
     procedure FromIni(AIni: TIniFile; ASection: string);
     procedure ToIni(AIni: TIniFile; ASection: string);
     function Text: string;
@@ -88,6 +100,18 @@ begin
   RtsMode := AIni.ReadInteger(ASection, 'RtsMode', 1);
   DtrMode := AIni.ReadInteger(ASection, 'DtrMode', 1);
 
+  offset50 := StrToInt64(AIni.ReadString(ASection, 'offset50', '22000000'));
+  offset144 := StrToInt64(AIni.ReadString(ASection, 'offset144', '116000000'));
+  offset222 := StrToInt64(AIni.ReadString(ASection, 'offset222', '194000000'));
+  offset432 := StrToInt64(AIni.ReadString(ASection, 'offset432', '404000000'));
+  offset903 := StrToInt64(AIni.ReadString(ASection, 'offset903', '875000000'));
+  offset1296 := StrToInt64(AIni.ReadString(ASection, 'offset1296', '1268000000'));
+  offset2G := StrToInt64(AIni.ReadString(ASection, 'offset2G', '2276000000'));
+  offset3G := StrToInt64(AIni.ReadString(ASection, 'offset3G', '3428000000'));
+  offset5G := StrToInt64(AIni.ReadString(ASection, 'offset5G', '5732000000'));
+  offset10G := StrToInt64(AIni.ReadString(ASection, 'offset10G', '10340000000'));
+  offset24G := StrToInt64(AIni.ReadString(ASection, 'offset24G', '24164000000'));
+
   //backward compatibility
   //if AIni.ReadString(ASection, 'Flow', '') = '0' then RtsMode := 2;
 
@@ -111,6 +135,19 @@ begin
   AIni.WriteInteger(ASection, 'DtrMode', DtrMode);
   AIni.WriteInteger(ASection, 'PollMs', PollMs);
   AIni.WriteInteger(ASection, 'TimeoutMs', TimeoutMs);
+
+
+  AIni.WriteString(ASection, 'offset50', offset50.ToString);
+  AIni.WriteString(ASection, 'offset144', offset144.ToString);
+  AIni.WriteString(ASection, 'offset222', offset222.ToString);
+  AIni.WriteString(ASection, 'offset432', offset432.ToString);
+  AIni.WriteString(ASection, 'offset903', offset903.ToString);
+  AIni.WriteString(ASection, 'offset1296', offset1296.ToString);
+  AIni.WriteString(ASection, 'offset2G', offset2G.ToString);
+  AIni.WriteString(ASection, 'offset3G', offset3G.ToString);
+  AIni.WriteString(ASection, 'offset5G', offset5G.ToString);
+  AIni.WriteString(ASection, 'offset10G', offset10G.ToString);
+  AIni.WriteString(ASection, 'offset24G', offset24G.ToString);
 end;
 
 
@@ -126,6 +163,17 @@ begin
   DtrMode := MainForm.DtrComboBox.ItemIndex;
   PollMs := MainForm.PollSpinEdit.Value;
   TimeoutMs := MainForm.TimeoutSpinEdit.Value;
+  offset50 := StrToInt64(MainForm.Box50.Text);
+  offset144 := StrToInt64(MainForm.Box144.Text);
+  offset222 := StrToInt64(MainForm.Box222.Text);
+  offset432 := StrToInt64(MainForm.Box432.Text);
+  offset903 := StrToInt64(MainForm.Box903.Text);
+  offset1296 := StrToInt64(MainForm.Box1296.Text);
+  offset2G := StrToInt64(MainForm.Box2G.Text);
+  offset3G := StrToInt64(MainForm.Box3G.Text);
+  offset5G := StrToInt64(MainForm.Box5G.Text);
+  offset10G := StrToInt64(MainForm.Box10G.Text);
+  offset24G := StrToInt64(MainForm.Box24G.Text);
 end;
 
 
@@ -142,6 +190,17 @@ begin
   MainForm.DtrComboBox.ItemIndex := DtrMode;
   MainForm.PollSpinEdit.Value := PollMs;
   MainForm.TimeoutSpinEdit.Value := TimeoutMs;
+  MainForm.Box50.Text := offset50.ToString;
+  MainForm.Box144.Text := offset144.ToString;
+  MainForm.Box222.Text := offset222.ToString;
+  MainForm.Box432.Text := offset432.ToString;
+  MainForm.Box903.Text := offset903.ToString;
+  MainForm.Box1296.Text := offset1296.ToString;
+  MainForm.Box2G.Text := offset2G.ToString;
+  MainForm.Box3G.Text := offset3G.ToString;
+  MainForm.Box5G.Text := offset5G.ToString;
+  MainForm.Box10G.Text := offset10G.ToString;
+  MainForm.Box24G.Text := offset24G.ToString;
 end;
 
 

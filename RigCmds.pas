@@ -136,9 +136,9 @@ type
   end;
 
 
-function ParamsToInt(Params: TRigParamSet): integer;
-function ParamToInt(Param: TRigParam): integer;
-function IntToParam(Int: integer): TRigParam;
+function ParamsToInt(Params: TRigParamSet): Int64;
+function ParamToInt(Param: TRigParam): Int64;
+function IntToParam(Int: Int64): TRigParam;
 
 
 
@@ -312,7 +312,6 @@ begin
   except Log('invalid Length value'); end;
 
   Result.Format := StrToFmt(FList[2]);
-
   try Result.Mult := StrToFloat(FList[3]);
   except Log('invalid Multiplier value'); end;
 
@@ -465,7 +464,7 @@ end;
 
 function TRigCommands.ParamToStr(Param: TRigParam): AnsiString;
 begin
-  Result := GetEnumName(TypeInfo(TRigParam), integer(Param));
+  Result := GetEnumName(TypeInfo(TRigParam), Int64(Param));
 end;
 
 
@@ -493,7 +492,7 @@ begin
     if Length(S) mod 2 <> 0 then Abort;
     SetLength(Result, Length(S) div 2);
     for i:=0 to High(Result) do
-      Result[i] := StrToInt('$' + Copy(S, 1 + i*2, 2));
+      Result[i] := StrToInt64('$' + Copy(S, 1 + i*2, 2));
     end
 
   //all other
@@ -689,7 +688,7 @@ begin
 end;
 
 
-function ParamsToInt(Params: TRigParamSet): integer;
+function ParamsToInt(Params: TRigParamSet): Int64;
 var
   Par: TRigParam;
 begin
@@ -699,13 +698,13 @@ begin
 end;
 
 
-function ParamToInt(Param: TRigParam): integer;
+function ParamToInt(Param: TRigParam): Int64;
 begin
   Result := 1 shl Ord(Param);
 end;
 
 
-function IntToParam(Int: integer): TRigParam;
+function IntToParam(Int: Int64): TRigParam;
 begin
   for Result:=Low(TRigParam) to High(TRigParam) do
     if (1 shl Ord(Result)) = Int then Exit;
