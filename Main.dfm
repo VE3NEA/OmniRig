@@ -3,7 +3,7 @@ object MainForm: TMainForm
   Top = 116
   BorderStyle = bsDialog
   Caption = 'Omni-Rig Settings'
-  ClientHeight = 355
+  ClientHeight = 391
   ClientWidth = 411
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -48,15 +48,15 @@ object MainForm: TMainForm
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
-    Top = 322
+    Top = 360
     Width = 411
-    Height = 33
+    Height = 31
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
     DesignSize = (
       411
-      33)
+      31)
     object OkBtn: TButton
       Left = 249
       Top = 5
@@ -86,23 +86,34 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 411
-    Height = 322
+    Height = 360
     Align = alClient
+    OwnerDraw = True
     TabOrder = 1
     Tabs.Strings = (
       'RIG 1'
       'RIG 2'
+      'RIG 3'
+      'RIG 4'
       'About')
     TabIndex = 0
     OnChange = TabControl1Change
     OnChanging = TabControl1Changing
+    OnDrawTab = TabControl1DrawTab
     object Panel2: TPanel
       Left = 4
       Top = 24
       Width = 206
-      Height = 294
+      Height = 332
       Align = alLeft
       BevelOuter = bvNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentBackground = False
+      ParentFont = False
       TabOrder = 0
       object Label1: TLabel
         Left = 14
@@ -290,8 +301,8 @@ object MainForm: TMainForm
         Top = 235
         Width = 103
         Height = 22
-        MaxLength = 4
-        MaxValue = 2000
+        MaxLength = 5
+        MaxValue = 60000
         MinValue = 100
         TabOrder = 7
         Value = 100
@@ -318,19 +329,49 @@ object MainForm: TMainForm
           'Low'
           'High')
       end
+      object RightArraowBtn: TButton
+        Left = 136
+        Top = 298
+        Width = 49
+        Height = 25
+        Caption = #8594
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -27
+        Font.Name = 'MS Gothic'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 10
+        OnClick = RightArraowBtnClick
+      end
+      object LeftArrowBtn: TButton
+        Left = 14
+        Top = 298
+        Width = 49
+        Height = 25
+        Caption = #8592
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -27
+        Font.Name = 'MS Gothic'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 11
+        OnClick = LeftArrowBtnClick
+      end
     end
     object Panel3: TPanel
       Left = 210
       Top = 24
       Width = 197
-      Height = 294
+      Height = 332
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
       Visible = False
       DesignSize = (
         197
-        294)
+        332)
       object Label8: TLabel
         Left = 69
         Top = 31
@@ -424,7 +465,7 @@ object MainForm: TMainForm
       end
       object Label15: TLabel
         Left = 8
-        Top = 272
+        Top = 310
         Width = 184
         Height = 13
         Cursor = crHandPoint
@@ -437,6 +478,7 @@ object MainForm: TMainForm
         Font.Style = [fsUnderline]
         ParentFont = False
         OnClick = Label15Click
+        ExplicitTop = 272
       end
       object Label16: TLabel
         Left = 41
@@ -447,7 +489,7 @@ object MainForm: TMainForm
       end
       object Label17: TLabel
         Left = 26
-        Top = 209
+        Top = 247
         Width = 144
         Height = 13
         Cursor = crHandPoint
@@ -460,6 +502,7 @@ object MainForm: TMainForm
         Font.Style = [fsUnderline]
         ParentFont = False
         OnClick = Label17Click
+        ExplicitTop = 209
       end
       object Label18: TLabel
         Left = 32
@@ -472,13 +515,14 @@ object MainForm: TMainForm
   end
   object ApplicationEvents1: TApplicationEvents
     OnMessage = ApplicationEvents1Message
-    Left = 56
-    Top = 324
+    Left = 32
+    Top = 364
   end
   object Timer1: TTimer
     Interval = 100
     OnTimer = Timer1Timer
-    Left = 92
-    Top = 324
+    Left = 4
+    Top = 364
   end
 end
+

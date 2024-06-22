@@ -62,6 +62,8 @@ type
     Label18: TLabel;
     Label11: TLabel;
     DtrComboBox: TComboBox;
+    RightArraowBtn: TButton;
+    LeftArrowBtn: TButton;
     procedure OkBtnClick(Sender: TObject);
     procedure CancelBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -77,6 +79,10 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Label15Click(Sender: TObject);
     procedure Label17Click(Sender: TObject);
+    procedure RightArraowBtnClick(Sender: TObject);
+    procedure LeftArrowBtnClick(Sender: TObject);
+    procedure TabControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
+      const Rect: TRect; Active: Boolean);
   private
     FLog: TFileStream;
     FLogMode: integer;
@@ -101,9 +107,16 @@ type
 
     Rig1: TRig;
     Rig2: TRig;
+    Rig3: TRig;
+    Rig4: TRig;
     Sett1: TRigSettings;
     Sett2: TRigSettings;
+    Sett3: TRigSettings;
+    Sett4: TRigSettings;
+    SettTemp: TRigSettings;
     SetBothModes: boolean;
+
+    currentTabIndex: integer;
 
 
     procedure ForceForeground;
@@ -131,13 +144,24 @@ begin
   RigTypes := TAlStringList.Create;
   Rig1 := TRig.Create;
   Rig2 := TRig.Create;
+  Rig3 := TRig.Create;
+  Rig4 := TRig.Create;
   Sett1 := TRigSettings.Create;
   Sett2 := TRigSettings.Create;
+  Sett3 := TRigSettings.Create;
+  Sett4 := TRigSettings.Create;
+  SettTemp := TRigSettings.Create;
 
   Sett1.Port := 0;
   Sett2.Port := 1;
+  Sett3.Port := 2;
+  Sett4.Port := 3;
   Rig1.RigNumber := 1;
   Rig2.RigNumber := 2;
+  Rig3.RigNumber := 3;
+  Rig4.RigNumber := 4;
+
+  currentTabIndex := 0;
 
   ListComPorts;
   ListBaudRates;
@@ -146,12 +170,16 @@ begin
 
   Sett1.ToRig(Rig1);
   Sett2.ToRig(Rig2);
+  Sett3.ToRig(Rig3);
+  Sett4.ToRig(Rig4);
 
   Rig1.Enabled := true;
   Rig2.Enabled := true;
+  Rig3.Enabled := true;
+  Rig4.Enabled := true;
 
   Panel2.Align := alClient;
-  Width := 214;
+  Width := 230;
   Label9.Caption := Format('Version %d.%d', [HiWord(GetVersion), LoWord(GetVersion)]);
 
 
@@ -167,8 +195,13 @@ begin
 
   Rig1.Free;
   Rig2.Free;
+  Rig3.Free;
+  Rig4.Free;
   Sett1.Free;
   Sett2.Free;
+  Sett3.Free;
+  Sett4.Free;
+  SettTemp.Free;
 
   for i:=0 to RigTypes.Count-1 do RigTypes.Objects[i].Free;
   RigTypes.Free;
@@ -243,6 +276,8 @@ procedure TMainForm.Timer1Timer(Sender: TObject);
 begin
   Rig1.TimerTick;
   Rig2.TimerTick;
+  Rig3.TimerTick;
+  Rig4.TimerTick;
 end;
 
 
@@ -332,6 +367,10 @@ begin
     Log('RIG 1 settings: ' + Sett1.Text);
     Sett2.FromIni(Ini, 'RIG2');
     Log('RIG 2 settings: ' + Sett2.Text);
+    Sett3.FromIni(Ini, 'RIG3');
+    Log('RIG 3 settings: ' + Sett3.Text);
+    Sett4.FromIni(Ini, 'RIG4');
+    Log('RIG 4 settings: ' + Sett4.Text);
     SetBothModes := Ini.ReadBool('General', 'SetBothModes', false);
   finally
     Ini.Free;
@@ -347,6 +386,8 @@ begin
   try
     Sett1.ToIni(Ini, 'RIG1');
     Sett2.ToIni(Ini, 'RIG2');
+    Sett3.ToIni(Ini, 'RIG3');
+    Sett4.ToIni(Ini, 'RIG4');
   finally
     Ini.Free;
   end;
@@ -361,6 +402,8 @@ end;
 //                           user interface
 //------------------------------------------------------------------------------
 procedure TMainForm.FormShow(Sender: TObject);
+var
+  i: integer;
 begin
   TabControl1.TabIndex := 0;
   Panel2.Visible := true;
@@ -368,8 +411,10 @@ begin
 
   Sett1.FromRig(Rig1);
   Sett2.FromRig(Rig2);
+  Sett3.FromRig(Rig3);
+  Sett4.FromRig(Rig4);
   Sett1.ToControls;
-  
+
   ComNotifyVisible;
 end;
 
@@ -386,19 +431,40 @@ begin
   case TabControl1.TabIndex of
     0: Sett1.FromControls;
     1: Sett2.FromControls;
+    2: Sett3.FromControls;
+    3: Sett4.FromControls;
   end;
 end;
 
+
+procedure TMainForm.TabControl1DrawTab(Control: TCustomTabControl;
+  TabIndex: Integer; const Rect: TRect; Active: Boolean);
+  var
+  h,L: Integer;
+begin
+  Control.Canvas.Font.Color:=clBlack;
+  if TabIndex=0 then begin
+    Control.Canvas.Brush.Color:=RGB(0,255,0);
+  end;
+  if TabIndex=1 then begin
+    Control.Canvas.Brush.Color:=RGB(0,255,0);
+  end;
+  Control.Canvas.Pen.Style:=psClear;
+  Control.Canvas.Rectangle(Rect);
+  Control.Canvas.TextOut(Rect.Left+5,5,(Control as TTabControl).Tabs[TabIndex]);
+end;
 
 procedure TMainForm.TabControl1Change(Sender: TObject);
 begin
   case TabControl1.TabIndex of
     0: Sett1.ToControls;
     1: Sett2.ToControls;
+    2: Sett3.ToControls;
+    3: Sett4.ToControls;
   end;
 
-  Panel2.Visible := TabControl1.TabIndex in [0,1];
-  Panel3.Visible := TabControl1.TabIndex = 2;
+  Panel2.Visible := TabControl1.TabIndex in [0,1,2,3];
+  Panel3.Visible := TabControl1.TabIndex = 4;
 end;
 
 
@@ -407,13 +473,19 @@ begin
   case TabControl1.TabIndex of
     0: Sett1.FromControls;
     1: Sett2.FromControls;
+    2: Sett3.FromControls;
+    3: Sett4.FromControls;
   end;
 
   Log('RIG 1 settings: ' + Sett1.Text);
   Log('RIG 2 settings: ' + Sett2.Text);
+  Log('RIG 3 settings: ' + Sett3.Text);
+  Log('RIG 4 settings: ' + Sett4.Text);
 
   Sett1.ToRig(Rig1);
   Sett2.ToRig(Rig2);
+  Sett3.ToRig(Rig3);
+  Sett4.ToRig(Rig4);
   SaveSettings;
 
   Close;
@@ -426,9 +498,71 @@ begin
 end;
 
 
+procedure TMainForm.RightArraowBtnClick(Sender: TObject);
+begin
 
+  //from current control to temp settings
+  settTemp.FromControls;
 
+  //from right rig to current settings
+  case TabControl1.TabIndex of
+    0: Sett2.ToControls;
+    1: Sett3.ToControls;
+    2: Sett4.ToControls;
+    3: Sett1.ToControls;
+  end;
+  case TabControl1.TabIndex of
+    0: Sett1.FromControls;
+    1: Sett2.FromControls;
+    2: Sett3.FromControls;
+    3: Sett4.FromControls;
+  end;
 
+  //from temp settings to right control
+  settTemp.ToControls;
+  case TabControl1.TabIndex of
+    0: Sett2.FromControls;
+    1: Sett3.FromControls;
+    2: Sett4.FromControls;
+    3: Sett1.FromControls;
+  end;
+
+  TabControl1.TabIndex := (TabControl1.TabIndex+1) mod 4;
+  Panel2.Visible := TabControl1.TabIndex in [0,1,2,3];
+
+end;
+
+procedure TMainForm.LeftArrowBtnClick(Sender: TObject);
+begin
+    //from current control to temp settings
+  settTemp.FromControls;
+
+  //from left rig to current settings
+  case TabControl1.TabIndex of
+    0: Sett4.ToControls;
+    1: Sett1.ToControls;
+    2: Sett2.ToControls;
+    3: Sett3.ToControls;
+  end;
+  case TabControl1.TabIndex of
+    0: Sett1.FromControls;
+    1: Sett2.FromControls;
+    2: Sett3.FromControls;
+    3: Sett4.FromControls;
+  end;
+
+  //from temp settings to left control
+  settTemp.ToControls;
+  case TabControl1.TabIndex of
+    0: Sett4.FromControls;
+    1: Sett1.FromControls;
+    2: Sett2.FromControls;
+    3: Sett3.FromControls;
+  end;
+
+  TabControl1.TabIndex := (TabControl1.TabIndex+3) mod 4;
+  Panel2.Visible := TabControl1.TabIndex in [0,1,2,3];
+end;
 
 
 //------------------------------------------------------------------------------
@@ -481,6 +615,8 @@ begin
   case Msg.WParam of
     1: Rig1.CheckQueue;
     2: Rig2.CheckQueue;
+    3: Rig3.CheckQueue;
+    4: Rig4.CheckQueue;
     end;
 end;
 
@@ -497,10 +633,6 @@ begin
 Cfg.dwSize := sizeof(cfg);
 CommConfigDialog('COM1', handle, Cfg);
 end;
-
-
-
-
 
 //------------------------------------------------------------------------------
 //                           debugging  log
@@ -520,6 +652,8 @@ begin
 
   Log('Omni-Rig started: Version %d.%d', [HiWord(GetVersion), LoWord(GetVersion)]);
 end;
+
+
 
 
 procedure TMainForm.CloseLog;
@@ -584,7 +718,7 @@ end;
 procedure TMainForm.Label15Click(Sender: TObject);
 begin
   ShellExecute(GetDesktopWindow, 'open',
-    'http://www.dxatlas.com/OmniRig', '', '', SW_SHOWNORMAL);  
+    'http://www.dxatlas.com/OmniRig', '', '', SW_SHOWNORMAL);
 end;
 
 procedure TMainForm.Label17Click(Sender: TObject);
@@ -592,7 +726,6 @@ begin
   ShellExecute(Application.Handle, nil,
     'mailto:ve3nea@dxatlas.com?subject=OmniRig', '', '', SW_SHOWNORMAL);
 end;
-
 
 procedure TMainForm.WMQueryEndSession(var Msg: TMessage);
 begin
@@ -618,4 +751,5 @@ initialization
 
 
 end.
+
 
